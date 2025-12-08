@@ -21,10 +21,38 @@ jobs:
     - name: Generate files.json
       run: |
         cd docs
-        # Create JSON array of all HTML files
+        # Create JSON array of all HTML files sorted by date in filename
         echo "[" > files.json
-        find . -maxdepth 1 -name "*.html" -type f | sed 's|^\./||' | sort | \
-        awk '{printf "    \"%s\"%s\n", $0, (NR==1 ? "" : ",")}' | tac >> files.json
+        
+        # Find HTML files, extract dates, sort by date (newest first), then format as JSON
+        find . -maxdepth 1 -name "*.html" -type f | sed 's|^\./||' | \
+        awk -F'_' '{
+          # Extract MM-DD-YY from end of filename
+          # Pattern: opportunities_Xdays_MM-DD-YY.html or M-D-YY.html
+          last_part = $NF;
+          gsub(/\.html$/, "", last_part);
+          
+          # Split by dash to get date components
+          n = split(last_part, date_parts, "-");
+          
+          if (n >= 3) {
+            # Get MM, DD, YY - convert to integers to handle leading zeros
+            mm = date_parts[1] + 0;
+            dd = date_parts[2] + 0;
+            yy = date_parts[3] + 0;
+            
+            # Convert to YYYYMMDD for sorting (20YY-MM-DD)
+            sort_date = sprintf("20%02d%02d%02d", yy, mm, dd);
+            print sort_date " " $0;
+          } else {
+            # If no date found, use 00000000 to sort to end
+            print "00000000 " $0;
+          }
+        }' | \
+        sort -r | \
+        awk '{print $2}' | \
+        awk '{printf "    \"%s\"", $0; if (NR > 1) printf ",\n"; else printf "\n";}' | tac >> files.json
+        
         echo "]" >> files.json
         
     - name: Commit changes
