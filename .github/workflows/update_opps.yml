@@ -1,4 +1,4 @@
-name: Update Index with Doc Files
+name: Update File Manifest
 
 on:
   push:
@@ -7,36 +7,32 @@ on:
       - 'docs/**'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  update-index:
+  update-manifest:
     runs-on: ubuntu-latest
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
       
-    - name: Generate file list and update index.html
+    - name: Generate files.json
       run: |
-        # Get list of HTML files in docs folder
-        FILES=$(find docs -name "*.html" -type f | sed 's|docs/||' | sort)
-        
-        # Create JavaScript array
-        ARRAY="const docFiles = [\n"
-        for file in $FILES; do
-          ARRAY+="            '$file',\n"
-        done
-        ARRAY+="        ];"
-        
-        # Replace the docFiles array in index.html
-        # Using perl for multi-line replacement
-        perl -i -0pe "s/const docFiles = \[.*?\];/$ARRAY/s" index.html
+        cd docs
+        # Create JSON array of all HTML files
+        echo "[" > files.json
+        find . -maxdepth 1 -name "*.html" -type f | sed 's|^\./||' | sort | \
+        awk '{printf "    \"%s\"%s\n", $0, (NR==1 ? "" : ",")}' | tac >> files.json
+        echo "]" >> files.json
         
     - name: Commit changes
       run: |
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add index.html
-        git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update doc file list"
+        git add docs/files.json
+        git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update file manifest"
         
     - name: Push changes
       uses: ad-m/github-push-action@master
