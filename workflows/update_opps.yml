@@ -1,0 +1,45 @@
+name: Update Index with Doc Files
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+  workflow_dispatch:
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Generate file list and update index.html
+      run: |
+        # Get list of HTML files in docs folder
+        FILES=$(find docs -name "*.html" -type f | sed 's|docs/||' | sort)
+        
+        # Create JavaScript array
+        ARRAY="const docFiles = [\n"
+        for file in $FILES; do
+          ARRAY+="            '$file',\n"
+        done
+        ARRAY+="        ];"
+        
+        # Replace the docFiles array in index.html
+        # Using perl for multi-line replacement
+        perl -i -0pe "s/const docFiles = \[.*?\];/$ARRAY/s" index.html
+        
+    - name: Commit changes
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add index.html
+        git diff --quiet && git diff --staged --quiet || git commit -m "Auto-update doc file list"
+        
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
