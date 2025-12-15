@@ -25,6 +25,7 @@ jobs:
       - name: Generate files.json (sorted newest → oldest)
         run: |
           cd docs
+
           find . -maxdepth 1 -name "*.html" -type f \
             | sed 's|^\./||' \
             | awk -F'_' '{
@@ -73,4 +74,22 @@ jobs:
     needs: update-manifest
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Upload static site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
