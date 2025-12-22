@@ -14,7 +14,7 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: #000000;
-            background-image: url('background.png');
+            background-image: url('background.png?v=2');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -239,14 +239,6 @@
     </div>
 
     <script>
-        // List of HTML files in the /docs/ folder
-        // Update this array with your actual file names
-        const docFiles = [
-            'opportunities_14days_12-8-25.html',
-            'opportunities_7days_11-24-25.html',
-            'opportunities_7days_12-1-25.html',
-        ];
-
         const select = document.getElementById('doc-select');
         const contentFrame = document.getElementById('content-frame');
         const widthSlider = document.getElementById('width-slider');
@@ -271,9 +263,46 @@
             widthValue.textContent = savedWidth + 'px';
         }
 
-        // Fetch the list of files from the manifest
-        fetch('docs/files.json')
-            .then(response => response.json())
+        // Check for cached version and only fetch if version changed
+        async function loadManifest() {
+            const cachedVersion = localStorage.getItem('manifestVersion');
+            const cachedFiles = localStorage.getItem('manifestFiles');
+            
+            try {
+                // Always fetch to check version (small file, quick check)
+                const response = await fetch(`docs/files.json?v=${Date.now()}`);
+                const data = await response.json();
+                
+                const newVersion = data.version;
+                const files = data.files;
+                
+                // If version matches cache, use cached data
+                if (cachedVersion === newVersion && cachedFiles) {
+                    console.log('Using cached manifest (version:', newVersion, ')');
+                    return JSON.parse(cachedFiles);
+                }
+                
+                // Version changed or no cache - update cache
+                console.log('Manifest updated (version:', newVersion, ')');
+                localStorage.setItem('manifestVersion', newVersion);
+                localStorage.setItem('manifestFiles', JSON.stringify(files));
+                
+                return files;
+            } catch (error) {
+                console.error('Error loading manifest:', error);
+                
+                // Fall back to cached data if available
+                if (cachedFiles) {
+                    console.log('Using cached manifest (fallback)');
+                    return JSON.parse(cachedFiles);
+                }
+                
+                throw error;
+            }
+        }
+
+        // Load and populate dropdown
+        loadManifest()
             .then(docFiles => {
                 // Populate dropdown with file names
                 docFiles.forEach(file => {

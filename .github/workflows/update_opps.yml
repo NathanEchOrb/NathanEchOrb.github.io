@@ -1,21 +1,101 @@
-name: Deploy to GitHub Pages
+name: Update Manifest and Deploy to GitHub Pages
 on:
   push:
     branches: [ main ]
     paths:
       - 'docs/*.html'
-      - 'docs/files.json'
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 jobs:
-  build:
+  update-manifest:
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Generate files.json with version (sorted newest → oldest)
+        run: |
+          cd docs
+          find . -maxdepth 1 -name "*.html" -type f \
+            | sed 's|^\./||' \
+            | awk -F'_' '{
+                last = $NF
+                gsub(/\.html$/, "", last)
+                n = split(last, d, "-")
+                if (n >= 3) {
+                  mm = d[1] + 0
+                  dd = d[2] + 0
+                  yy = d[3] + 0
+                  sort_val = sprintf("20%02d%02d%02d", yy, mm, dd)
+                  print sort_val, $0
+                } else {
+                  print "00000000", $0
+                }
+              }' \
+            | sort -r \
+            | awk '{print $2}' \
+            > sorted_files.txt
+          
+          # Generate version hash from file list
+          VERSION=$(cat sorted_files.txt | md5sum | cut -d' ' -f1 | cut -c1-8)
+          
+          # Create JSON with version and files array
+          echo "{" > files.json
+          echo "  \"version\": \"$VERSION\"," >> files.json
+          echo "  \"files\": [" >> files.json
+          
+          # Add files as JSON array
+          first=true
+          while IFS= read -r file; do
+            if [ "$first" = true ]; then
+              echo "    \"$file\"" >> files.json
+              first=false
+            else
+              echo "    ,\"$file\"" >> files.json
+            fi
+          done < sorted_files.txt
+          
+          echo "  ]" >> files.json
+          echo "}" >> files.json
+          
+          # Clean up temp file
+          rm sorted_files.txt
+      - name: Commit manifest changes
+        id: commit
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/files.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            git commit -m "Auto-update file manifest"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+      - name: Push manifest changes
+        if: steps.commit.outputs.changed == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+      - name: Wait for commit to propagate
+        if: steps.commit.outputs.changed == 'true'
+        run: sleep 5
+  build:
+    runs-on: ubuntu-latest
+    needs: update-manifest
+    if: always()
+    steps:
+      - name: Checkout repository (with latest manifest)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
