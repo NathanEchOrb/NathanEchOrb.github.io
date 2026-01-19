@@ -311,7 +311,9 @@
                     // Create a user-friendly name by removing .html and formatting
                     const displayName = file
                         .replace('.html', '')
-                        .replace(/[-_]/g, ' ')
+                        .replace(/_enriched$/, '')
+                        .replace(/_/g, ' ')
+                        .replace(/(\d+)-(\d+)-(\d+)/, '$1/$2/$3')
                         .replace(/\b\w/g, char => char.toUpperCase());
                     option.textContent = displayName;
                     select.appendChild(option);
