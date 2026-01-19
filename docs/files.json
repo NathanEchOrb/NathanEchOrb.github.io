@@ -1,13 +1,14 @@
 {
-  "version": "0fe79df8",
+  "version": "147cca27",
   "files": [
-    "opportunities_14days_1-12-26.html"
-    ,"opportunities_14days_1-5-26.html"
-    ,"opportunities_14days_12-29-25.html"
-    ,"opportunities_14days_12-22-25.html"
-    ,"opportunities_14days_12-15-25.html"
-    ,"opportunities_14days_12-8-25.html"
-    ,"opportunities_7days_12-1-25.html"
-    ,"opportunities_7days_11-24-25.html"
+    "opportunities_7days_12-1-25_enriched.html"
+    ,"opportunities_7days_11-24-25_enriched.html"
+    ,"opportunities_14days_12-8-25_enriched.html"
+    ,"opportunities_14days_12-29-25_enriched.html"
+    ,"opportunities_14days_12-22-25_enriched.html"
+    ,"opportunities_14days_12-15-25_enriched.html"
+    ,"opportunities_14days_1-5-26_enriched.html"
+    ,"opportunities_14days_1-19-26_enriched.html"
+    ,"opportunities_14days_1-12-26_enriched.html"
   ]
 }
