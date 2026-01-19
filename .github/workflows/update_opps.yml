@@ -25,9 +25,9 @@ jobs:
           find . -maxdepth 1 -name "*.html" -type f \
             | sed 's|^\./||' \
             | awk -F'_' '{
-                last = $NF
-                gsub(/\.html$/, "", last)
-                n = split(last, d, "-")
+                # Date is in the 3rd field (e.g., opportunities_14days_12-29-25_enriched.html)
+                date_field = $3
+                n = split(date_field, d, "-")
                 if (n >= 3) {
                   mm = d[1] + 0
                   dd = d[2] + 0
