@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/NathanBlaylock/Documents/Github/NathanEchOrb.github.io -maxdepth 2 -type f -name *.json)"
+    ]
+  }
+}
