@@ -62,6 +62,117 @@
             min-width: 250px;
         }
 
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-label {
+            color: #ecf0f1;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #34495e;
+            border-radius: 4px;
+            background-color: #34495e;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: #95a5a6;
+        }
+
+        .search-input:hover {
+            background-color: #415a77;
+            border-color: #415a77;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: #415a77;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #1e2130;
+            border: 1px solid #34495e;
+            border-radius: 0 0 6px 6px;
+            max-height: 500px;
+            overflow-y: auto;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+
+        .search-results.visible {
+            display: block;
+        }
+
+        .search-week-header {
+            padding: 0.5rem 1rem;
+            background-color: #131527;
+            color: #3498db;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #34495e;
+            position: sticky;
+            top: 0;
+        }
+
+        .search-result-item {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #2a2d3e;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .search-result-item:hover {
+            background-color: #2a2d3e;
+        }
+
+        .search-result-item a {
+            color: #64b5f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+        }
+
+        .search-result-item a:hover {
+            text-decoration: underline;
+        }
+
+        .search-result-org {
+            color: #95a5a6;
+            font-size: 0.75rem;
+            margin-top: 2px;
+        }
+
+        .search-result-item mark {
+            background-color: #3498db33;
+            color: #64b5f6;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .search-status {
+            padding: 0.75rem 1rem;
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
         .dropdown-label {
             color: #ecf0f1;
             font-size: 0.9rem;
@@ -197,6 +308,7 @@
             }
 
             .dropdown-container,
+            .search-container,
             .slider-container {
                 max-width: 100%;
             }
@@ -218,6 +330,11 @@
                     <select id="doc-select">
                         <option value="">-- Select a Report --</option>
                     </select>
+                </div>
+                <div class="search-container">
+                    <label class="search-label" for="search-input">Search Opportunities:</label>
+                    <input type="text" id="search-input" class="search-input" placeholder="Search titles across all weeks..." autocomplete="off">
+                    <div class="search-results" id="search-results"></div>
                 </div>
                 <div class="slider-container">
                     <label class="slider-label" for="width-slider">
@@ -337,6 +454,154 @@
                 console.error('Error loading file list:', error);
                 contentFrame.innerHTML = '<div class="error">Error loading document list. Please check that docs/files.json exists.</div>';
             });
+
+        // --- Search functionality ---
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+        let searchCache = {}; // filename -> [{title, titleHtml, org}]
+        let searchDebounce = null;
+
+        // Extract display name (week date) from filename
+        function weekLabel(filename) {
+            return filename
+                .replace('.html', '')
+                .replace(/_enriched$/, '')
+                .replace(/_/g, ' ')
+                .replace(/(\d+)-(\d+)-(\d+)/, '$1/$2/$3')
+                .replace(/\b\w/g, c => c.toUpperCase());
+        }
+
+        // Fetch and parse opportunity titles from an HTML file
+        async function parseOpportunities(filename) {
+            if (searchCache[filename]) return searchCache[filename];
+            const resp = await fetch('docs/' + filename);
+            const html = await resp.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const rows = doc.querySelectorAll('tbody tr');
+            const results = [];
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 2) return;
+                const titleCell = cells[0];
+                const link = titleCell.querySelector('a');
+                const title = titleCell.textContent.trim();
+                const href = link ? link.getAttribute('href') : '';
+                const org = cells[1] ? cells[1].textContent.trim() : '';
+                results.push({ title, href, org });
+            });
+            searchCache[filename] = results;
+            return results;
+        }
+
+        // Highlight matching text
+        function highlightMatch(text, query) {
+            const idx = text.toLowerCase().indexOf(query.toLowerCase());
+            if (idx === -1) return document.createTextNode(text);
+            const frag = document.createDocumentFragment();
+            frag.appendChild(document.createTextNode(text.substring(0, idx)));
+            const mark = document.createElement('mark');
+            mark.textContent = text.substring(idx, idx + query.length);
+            frag.appendChild(mark);
+            frag.appendChild(document.createTextNode(text.substring(idx + query.length)));
+            return frag;
+        }
+
+        async function doSearch(query) {
+            searchResults.innerHTML = '';
+            if (!query || query.length < 2) {
+                searchResults.classList.remove('visible');
+                return;
+            }
+
+            searchResults.innerHTML = '<div class="search-status">Searching...</div>';
+            searchResults.classList.add('visible');
+
+            // Get all files from the dropdown
+            const files = Array.from(select.options)
+                .map(o => o.value)
+                .filter(v => v);
+
+            const q = query.toLowerCase();
+            let totalMatches = 0;
+            const fragment = document.createDocumentFragment();
+
+            for (const file of files) {
+                let opps;
+                try {
+                    opps = await parseOpportunities(file);
+                } catch (e) {
+                    continue;
+                }
+                const matches = opps.filter(o => o.title.toLowerCase().includes(q));
+                if (matches.length === 0) continue;
+
+                totalMatches += matches.length;
+
+                // Week header divider
+                const header = document.createElement('div');
+                header.className = 'search-week-header';
+                header.textContent = weekLabel(file) + ' (' + matches.length + ')';
+                fragment.appendChild(header);
+
+                matches.forEach(m => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+
+                    const link = document.createElement('a');
+                    if (m.href) {
+                        link.href = m.href;
+                        link.target = '_blank';
+                    }
+                    link.appendChild(highlightMatch(m.title, query));
+                    item.appendChild(link);
+
+                    if (m.org) {
+                        const orgDiv = document.createElement('div');
+                        orgDiv.className = 'search-result-org';
+                        orgDiv.textContent = m.org;
+                        item.appendChild(orgDiv);
+                    }
+
+                    // Clicking the row (not the link) loads that week's report
+                    item.addEventListener('click', function(e) {
+                        if (e.target.tagName !== 'A') {
+                            select.value = file;
+                            select.dispatchEvent(new Event('change'));
+                            searchResults.classList.remove('visible');
+                        }
+                    });
+
+                    fragment.appendChild(item);
+                });
+            }
+
+            searchResults.innerHTML = '';
+            if (totalMatches === 0) {
+                searchResults.innerHTML = '<div class="search-status">No matches found</div>';
+            } else {
+                searchResults.appendChild(fragment);
+            }
+        }
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(() => doSearch(this.value.trim()), 300);
+        });
+
+        // Close results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                searchResults.classList.remove('visible');
+            }
+        });
+
+        // Re-show results on focus if there's a query
+        searchInput.addEventListener('focus', function() {
+            if (this.value.trim().length >= 2 && searchResults.children.length > 0) {
+                searchResults.classList.add('visible');
+            }
+        });
 
         // Handle selection change
         select.addEventListener('change', function() {
