@@ -1,10 +1,10 @@
 #!/bin/bash
 # manage_reports.sh
 # Detects mid-week report drops, builds a virtual weekly report from daily diffs,
-# and archives the virtual report when the real Monday report arrives.
+# and archives the partial report when the real Monday report arrives.
 #
 # Usage:
-#   ./manage_reports.sh              # normal run (moves files, modifies virtual report)
+#   ./manage_reports.sh              # normal run (moves files, modifies partial report)
 #   ./manage_reports.sh --dry-run    # preview what would happen without changing anything
 #   ./manage_reports.sh --test       # run against docs/ without needing git staged files
 
@@ -111,7 +111,7 @@ extract_row_by_id() {
   ' "$file"
 }
 
-# Read state file to get current virtual report info
+# Read state file to get current partial report info
 read_state() {
   if [ -f "$STATE_FILE" ]; then
     cat "$STATE_FILE"
@@ -151,11 +151,11 @@ get_window() {
   echo "$1" | awk -F'_' '{print $2}'
 }
 
-# Build virtual report filename for the next Monday
+# Build partial report filename for the next Monday
 build_virtual_name() {
   local window="$1"
   local next_monday_date="$2"
-  echo "opportunities_${window}_${next_monday_date}_enriched_virtual.html"
+  echo "opportunities_${window}_${next_monday_date}_partial.html"
 }
 
 # Check if a Monday report exists in docs/ for the week containing a given date
@@ -187,7 +187,7 @@ get_new_files() {
     find "$DOCS_DIR" -maxdepth 1 -name "opportunities_*_enriched.html" -type f -printf '%f\n' | sort
   else
     git diff --cached --name-only -- 'docs/*.html' 2>/dev/null \
-      | grep -v '_virtual\.html' \
+      | grep -v '_partial\.html' \
       | sed 's|^docs/||' \
       | sort
   fi
@@ -220,8 +220,8 @@ main() {
 
   # Process each new file
   while IFS= read -r fname; do
-    # Skip virtual reports
-    if [[ "$fname" == *"_virtual.html" ]]; then
+    # Skip partial reports
+    if [[ "$fname" == *"_partial.html" ]]; then
       continue
     fi
 
@@ -245,13 +245,13 @@ main() {
       log "  Monday report detected ($file_date)"
 
       if [ -n "$current_virtual" ] && [ -f "$DOCS_DIR/$current_virtual" ]; then
-        log "  Archiving virtual report: $current_virtual → temp_doc/"
+        log "  Archiving partial report: $current_virtual → temp_doc/"
         if [ "$DRY_RUN" = true ]; then
           log "  (dry-run) Would move $DOCS_DIR/$current_virtual → $TEMP_DIR/$current_virtual"
         else
           ensure_temp_dir
           mv "$DOCS_DIR/$current_virtual" "$TEMP_DIR/$current_virtual"
-          # Unstage the virtual report if it was staged
+          # Unstage the partial report if it was staged
           git reset HEAD -- "docs/$current_virtual" 2>/dev/null || true
         fi
         clear_state
@@ -266,7 +266,7 @@ main() {
       # ── Non-Monday report ──
       log "  Non-Monday report detected (day=$dow, date=$file_date)"
 
-      # Skip reports older than 14 days — not relevant to virtual report logic
+      # Skip reports older than 14 days — not relevant to partial report logic
       if ! is_within_days "$mm" "$dd" "$yy" 14; then
         log "  Older than 2 weeks, skipping."
         continue
@@ -292,17 +292,17 @@ main() {
       if [ -z "$current_virtual" ] || [ "$current_virtual" != "$virtual_name" ]; then
         # ── First mid-week report for this upcoming week ──
         log "  First mid-week report for week of $next_mon"
-        log "  Creating virtual report: $virtual_name"
+        log "  Creating partial report: $virtual_name"
 
         if [ "$DRY_RUN" = true ]; then
           log "  (dry-run) Would copy $fname → $virtual_name in docs/"
           log "  (dry-run) Would move $fname → temp_doc/"
         else
-          # Copy the file as the virtual report foundation
+          # Copy the file as the partial report foundation
           cp "$DOCS_DIR/$fname" "$DOCS_DIR/$virtual_name"
           # Move original to temp_doc
           mv "$DOCS_DIR/$fname" "$TEMP_DIR/$fname"
-          # Stage the virtual report, unstage the moved file
+          # Stage the partial report, unstage the moved file
           git add "$DOCS_DIR/$virtual_name"
           git reset HEAD -- "docs/$fname" 2>/dev/null || true
         fi
@@ -314,7 +314,7 @@ main() {
 
       else
         # ── Subsequent mid-week report: diff and append new entries ──
-        log "  Subsequent mid-week report, diffing against virtual report"
+        log "  Subsequent mid-week report, diffing against partial report"
 
         # Find the most recent file to diff against (the last processed file in temp_doc)
         local prev_file=""
@@ -325,7 +325,7 @@ main() {
         local new_file="$DOCS_DIR/$fname"
         local virtual_file="$DOCS_DIR/$virtual_name"
 
-        # Get IDs already in the virtual report
+        # Get IDs already in the partial report
         local existing_ids
         existing_ids=$(extract_opportunity_ids "$virtual_file")
 
@@ -333,7 +333,7 @@ main() {
         local new_ids
         new_ids=$(extract_opportunity_ids "$new_file")
 
-        # Find IDs in new file that are NOT in the virtual report
+        # Find IDs in new file that are NOT in the partial report
         local added_ids
         added_ids=$(comm -23 <(echo "$new_ids") <(echo "$existing_ids"))
 
