@@ -431,7 +431,8 @@
                         .replace(/_enriched$/, '')
                         .replace(/_/g, ' ')
                         .replace(/(\d+)-(\d+)-(\d+)/, '$1/$2/$3')
-                        .replace(/\b\w/g, char => char.toUpperCase());
+                        .replace(/\b\w/g, char => char.toUpperCase())
+                        .replace(/Partial$/, '(Partial)');
                     option.textContent = displayName;
                     select.appendChild(option);
                 });
@@ -468,7 +469,8 @@
                 .replace(/_enriched$/, '')
                 .replace(/_/g, ' ')
                 .replace(/(\d+)-(\d+)-(\d+)/, '$1/$2/$3')
-                .replace(/\b\w/g, c => c.toUpperCase());
+                .replace(/\b\w/g, c => c.toUpperCase())
+                .replace(/Partial$/, '(Partial)');
         }
 
         // Fetch and parse opportunity titles from an HTML file

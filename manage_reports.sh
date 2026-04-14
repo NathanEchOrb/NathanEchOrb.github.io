@@ -158,14 +158,13 @@ build_virtual_name() {
   echo "opportunities_${window}_${next_monday_date}_partial.html"
 }
 
-# Check if a Monday report exists in docs/ for the week containing a given date
+# Check if a Monday report (full or partial) exists in docs/ for the week containing a given date
 monday_report_exists() {
   local mm=$1 dd=$2 yy=$3
   local prev_mon
   prev_mon=$(get_prev_monday "$mm" "$dd" "$yy")
-  local pattern="opportunities_*_${prev_mon}_enriched.html"
   local found
-  found=$(find "$DOCS_DIR" -maxdepth 1 -name "$pattern" -type f 2>/dev/null | head -1)
+  found=$(find "$DOCS_DIR" -maxdepth 1 \( -name "opportunities_*_${prev_mon}_enriched.html" -o -name "opportunities_*_${prev_mon}_partial.html" \) -type f 2>/dev/null | head -1)
   [ -n "$found" ]
 }
 
@@ -244,16 +243,21 @@ main() {
       # ── Monday report: this is a real weekly report ──
       log "  Monday report detected ($file_date)"
 
-      if [ -n "$current_virtual" ] && [ -f "$DOCS_DIR/$current_virtual" ]; then
-        log "  Archiving partial report: $current_virtual → temp_doc/"
+      # Check if a partial report exists for this same week — replace it
+      local partial_for_this_week="opportunities_${window}_${file_date}_partial.html"
+      if [ -f "$DOCS_DIR/$partial_for_this_week" ]; then
+        log "  Full report replaces partial: removing $partial_for_this_week"
         if [ "$DRY_RUN" = true ]; then
-          log "  (dry-run) Would move $DOCS_DIR/$current_virtual → $TEMP_DIR/$current_virtual"
+          log "  (dry-run) Would remove $DOCS_DIR/$partial_for_this_week"
         else
           ensure_temp_dir
-          mv "$DOCS_DIR/$current_virtual" "$TEMP_DIR/$current_virtual"
-          # Unstage the partial report if it was staged
-          git reset HEAD -- "docs/$current_virtual" 2>/dev/null || true
+          mv "$DOCS_DIR/$partial_for_this_week" "$TEMP_DIR/$partial_for_this_week"
+          git reset HEAD -- "docs/$partial_for_this_week" 2>/dev/null || true
         fi
+      fi
+
+      # Clear state if this Monday report closes out the active partial
+      if [ -n "$current_virtual" ] && [ "$current_virtual" = "$partial_for_this_week" ]; then
         clear_state
         current_virtual=""
         current_week=""
@@ -289,7 +293,14 @@ main() {
       local virtual_name
       virtual_name=$(build_virtual_name "$window" "$next_mon")
 
-      if [ -z "$current_virtual" ] || [ "$current_virtual" != "$virtual_name" ]; then
+      # Recover state if the partial already exists on disk but state was lost
+      if [ -f "$DOCS_DIR/$virtual_name" ] && [ "$current_virtual" != "$virtual_name" ]; then
+        log "  Found existing partial on disk: $virtual_name (recovering state)"
+        current_virtual="$virtual_name"
+        current_week="$prev_mon"
+      fi
+
+      if [ "$current_virtual" != "$virtual_name" ]; then
         # ── First mid-week report for this upcoming week ──
         log "  First mid-week report for week of $next_mon"
         log "  Creating partial report: $virtual_name"
