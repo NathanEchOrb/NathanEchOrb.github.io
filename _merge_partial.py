@@ -40,6 +40,15 @@ def extract_rows(html):
     return re.findall(r"<tr(?:\s[^>]*)?>.*?</tr>", body, re.DOTALL)
 
 
+def dedupe_key(row):
+    """Row is a duplicate if (title, full Updated Date string) matches."""
+    title_m = re.search(r'<a[^>]*>([^<]+)</a>', row)
+    date_m = re.search(r'([A-Z][a-z]{2}\s+\d+,\s+\d{4}\s*\(\d+\))', row)
+    title = title_m.group(1).strip() if title_m else row
+    date = re.sub(r'\s+', ' ', date_m.group(1)) if date_m else ""
+    return (title, date)
+
+
 def main():
     if len(sys.argv) != 3:
         print("Usage: _merge_partial.py <partial> <new_file>", file=sys.stderr)
@@ -55,10 +64,20 @@ def main():
     new_rows = extract_rows(new_html)
 
     # Strip any existing week-divider rows — they'll be regenerated
-    data_rows = [
+    candidate_rows = [
         r for r in (partial_rows + new_rows)
         if 'class="week-divider"' not in r
     ]
+
+    # Dedupe: keep first occurrence for each (title, date) pair
+    seen = set()
+    data_rows = []
+    for row in candidate_rows:
+        key = dedupe_key(row)
+        if key in seen:
+            continue
+        seen.add(key)
+        data_rows.append(row)
 
     # Sort by Updated Date (most recent first)
     data_rows.sort(key=parse_updated_date, reverse=True)
