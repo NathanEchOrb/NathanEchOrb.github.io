@@ -91,7 +91,9 @@ date_to_sortable() {
 # Extract all SAM.gov opportunity IDs from an HTML file (the unique 32-char hex in URLs)
 extract_opportunity_ids() {
   local file="$1"
-  grep -oP 'sam\.gov/workspace/contract/opp/\K[a-f0-9]+' "$file" | sort -u
+  grep -o 'sam\.gov/workspace/contract/opp/[a-f0-9]*' "$file" \
+    | sed 's|.*/opp/||' \
+    | sort -u
 }
 
 # Extract a full table row (<tr>...</tr>) that contains a given opportunity ID
@@ -201,11 +203,11 @@ main() {
   local state
   state=$(read_state)
   local current_virtual
-  current_virtual=$(echo "$state" | grep -oP '"virtual_report"\s*:\s*"\K[^"]+' 2>/dev/null || echo "")
+  current_virtual=$(echo "$state" | sed -n 's/.*"virtual_report"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
   local current_week
-  current_week=$(echo "$state" | grep -oP '"week_of"\s*:\s*"\K[^"]+' 2>/dev/null || echo "")
+  current_week=$(echo "$state" | sed -n 's/.*"week_of"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
   local last_processed
-  last_processed=$(echo "$state" | grep -oP '"last_processed_file"\s*:\s*"\K[^"]+' 2>/dev/null || echo "")
+  last_processed=$(echo "$state" | sed -n 's/.*"last_processed_file"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
 
   # In test mode, figure out which files are "new" by comparing against temp_doc contents
   # In normal mode, use git staged files
@@ -324,63 +326,25 @@ main() {
         last_processed="$fname"
 
       else
-        # ── Subsequent mid-week report: diff and append new entries ──
-        log "  Subsequent mid-week report, diffing against partial report"
-
-        # Find the most recent file to diff against (the last processed file in temp_doc)
-        local prev_file=""
-        if [ -n "$last_processed" ] && [ -f "$TEMP_DIR/$last_processed" ]; then
-          prev_file="$TEMP_DIR/$last_processed"
-        fi
+        # ── Subsequent mid-week report: merge all rows into partial ──
+        log "  Subsequent mid-week report, merging into partial report"
 
         local new_file="$DOCS_DIR/$fname"
         local virtual_file="$DOCS_DIR/$virtual_name"
 
-        # Get IDs already in the partial report
-        local existing_ids
-        existing_ids=$(extract_opportunity_ids "$virtual_file")
-
-        # Get IDs in the new file
-        local new_ids
-        new_ids=$(extract_opportunity_ids "$new_file")
-
-        # Find IDs in new file that are NOT in the partial report
-        local added_ids
-        added_ids=$(comm -23 <(echo "$new_ids") <(echo "$existing_ids"))
-
-        local count
-        count=$(echo "$added_ids" | grep -c '[a-f0-9]' || echo 0)
-        log "  Found $count new entries to append"
-
-        if [ "$count" -gt 0 ] && [ "$DRY_RUN" = false ]; then
-          # Extract new rows and append them before </tbody>
-          local new_rows=""
-          while IFS= read -r opp_id; do
-            [ -z "$opp_id" ] && continue
-            local row
-            row=$(extract_row_by_id "$new_file" "$opp_id")
-            new_rows="${new_rows}${row}"
-          done <<< "$added_ids"
-
-          if [ -n "$new_rows" ]; then
-            # Insert new rows before the closing </tbody> tag
-            local temp_virtual
-            temp_virtual=$(mktemp)
-            awk -v rows="$new_rows" '
-              /<\/tbody>/ { printf "%s", rows }
-              { print }
-            ' "$virtual_file" > "$temp_virtual"
-            mv "$temp_virtual" "$virtual_file"
-            log "  Appended $count new entries to $virtual_name"
-          fi
-        elif [ "$DRY_RUN" = true ]; then
-          log "  (dry-run) Would append $count new entries to $virtual_name"
-        fi
-
-        # Move the mid-week file to temp_doc
         if [ "$DRY_RUN" = true ]; then
+          log "  (dry-run) Would merge $fname into $virtual_name and sort by date"
           log "  (dry-run) Would move $fname → temp_doc/"
         else
+          python "$REPO_ROOT/_merge_partial.py" "$virtual_file" "$new_file"
+          # Re-apply week dividers after the merge (rows are now sorted)
+          python -c "
+from pathlib import Path
+import sys
+sys.path.insert(0, r'$REPO_ROOT')
+from add_week_dividers import process_file
+process_file(Path(r'$virtual_file'))
+" 2>/dev/null || true
           mv "$new_file" "$TEMP_DIR/$fname"
           git add "$DOCS_DIR/$virtual_name"
           git reset HEAD -- "docs/$fname" 2>/dev/null || true

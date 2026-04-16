@@ -82,7 +82,7 @@ def process_file(filepath, dry_run=False):
     """Add week divider rows to an enriched HTML file."""
     html = filepath.read_text(encoding="utf-8")
 
-    if "week-divider" in html:
+    if '<tr class="week-divider"' in html:
         return False, "already has dividers"
 
     report_monday = get_report_monday(filepath.name)
