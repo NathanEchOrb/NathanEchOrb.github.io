@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opportunities Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #000000;
+            background-image: url('background.png?v=2');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            background-color: #131527;
+            padding: 0.75rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .navbar-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .navbar-controls {
+            display: flex;
+            gap: 2rem;
+            flex: 1;
+            align-items: center;
+        }
+
+        .dropdown-container {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .slider-container {
+            position: relative;
+            min-width: 250px;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-label {
+            color: #ecf0f1;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #34495e;
+            border-radius: 4px;
+            background-color: #34495e;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .search-input::placeholder {
+            color: #95a5a6;
+        }
+
+        .search-input:hover {
+            background-color: #415a77;
+            border-color: #415a77;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: #415a77;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #1e2130;
+            border: 1px solid #34495e;
+            border-radius: 0 0 6px 6px;
+            max-height: 500px;
+            overflow-y: auto;
+            z-index: 2000;
+            display: none;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+
+        .search-results.visible {
+            display: block;
+        }
+
+        .search-week-header {
+            padding: 0.5rem 1rem;
+            background-color: #131527;
+            color: #3498db;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #34495e;
+            position: sticky;
+            top: 0;
+        }
+
+        .search-result-item {
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #2a2d3e;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .search-result-item:hover {
+            background-color: #2a2d3e;
+        }
+
+        .search-result-item a {
+            color: #64b5f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+        }
+
+        .search-result-item a:hover {
+            text-decoration: underline;
+        }
+
+        .search-result-org {
+            color: #95a5a6;
+            font-size: 0.75rem;
+            margin-top: 2px;
+        }
+
+        .search-result-item mark {
+            background-color: #3498db33;
+            color: #64b5f6;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        .search-status {
+            padding: 0.75rem 1rem;
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .dropdown-label {
+            color: #ecf0f1;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .slider-label {
+            color: #ecf0f1;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .slider-value {
+            font-weight: 600;
+            color: #3498db;
+        }
+
+        select {
+            width: 100%;
+            padding: 0.6rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #34495e;
+            border-radius: 4px;
+            background-color: #34495e;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:hover {
+            background-color: #415a77;
+            border-color: #415a77;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: #415a77;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #34495e;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #5dade2;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: none;
+            transition: background 0.3s ease;
+        }
+
+        input[type="range"]::-moz-range-thumb:hover {
+            background: #5dade2;
+        }
+
+        .content-container {
+            max-width: 1560px; /* 30% larger than 1200px */
+            margin: 2rem auto;
+            padding: 0 2rem;
+            transition: max-width 0.3s ease;
+        }
+
+        .iframe-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 80vh;
+            border: none;
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .error {
+            text-align: center;
+            padding: 3rem;
+            color: #e74c3c;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .navbar-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .navbar-controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .dropdown-container,
+            .search-container,
+            .slider-container {
+                max-width: 100%;
+            }
+
+            .content-container {
+                margin: 1rem auto;
+                padding: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-title">Opportunities</div>
+            <div class="navbar-controls">
+                <div class="dropdown-container">
+                    <label class="dropdown-label" for="doc-select">Select Report:</label>
+                    <select id="doc-select">
+                        <option value="">-- Select a Report --</option>
+                    </select>
+                </div>
+                <div class="search-container">
+                    <label class="search-label" for="search-input">Search Opportunities:</label>
+                    <input type="text" id="search-input" class="search-input" placeholder="Search titles across all weeks..." autocomplete="off">
+                    <div class="search-results" id="search-results"></div>
+                </div>
+                <div class="slider-container">
+                    <label class="slider-label" for="width-slider">
+                        <span>Content Width:</span>
+                        <span class="slider-value" id="width-value">1560px</span>
+                    </label>
+                    <input type="range" id="width-slider" min="600" max="2400" value="1200" step="40">
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-container">
+        <div class="iframe-container">
+            <div id="content-frame">
+                <div class="loading">Select a document from the dropdown menu above</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const select = document.getElementById('doc-select');
+        const contentFrame = document.getElementById('content-frame');
+        const widthSlider = document.getElementById('width-slider');
+        const widthValue = document.getElementById('width-value');
+        const contentContainer = document.querySelector('.content-container');
+
+        // Width slider functionality
+        widthSlider.addEventListener('input', function() {
+            const width = this.value;
+            contentContainer.style.maxWidth = width + 'px';
+            widthValue.textContent = width + 'px';
+            
+            // Save preference to localStorage
+            localStorage.setItem('contentWidth', width);
+        });
+
+        // Load saved width preference
+        const savedWidth = localStorage.getItem('contentWidth');
+        if (savedWidth) {
+            widthSlider.value = savedWidth;
+            contentContainer.style.maxWidth = savedWidth + 'px';
+            widthValue.textContent = savedWidth + 'px';
+        }
+
+        // Check for cached version and only fetch if version changed
+        async function loadManifest() {
+            const cachedVersion = localStorage.getItem('manifestVersion');
+            const cachedFiles = localStorage.getItem('manifestFiles');
+            
+            try {
+                // Always fetch to check version (small file, quick check)
+                const response = await fetch(`docs/files.json?v=${Date.now()}`);
+                const data = await response.json();
+                
+                const newVersion = data.version;
+                const files = data.files;
+                
+                // If version matches cache, use cached data
+                if (cachedVersion === newVersion && cachedFiles) {
+                    console.log('Using cached manifest (version:', newVersion, ')');
+                    return JSON.parse(cachedFiles);
+                }
+                
+                // Version changed or no cache - update cache
+                console.log('Manifest updated (version:', newVersion, ')');
+                localStorage.setItem('manifestVersion', newVersion);
+                localStorage.setItem('manifestFiles', JSON.stringify(files));
+                
+                return files;
+            } catch (error) {
+                console.error('Error loading manifest:', error);
+                
+                // Fall back to cached data if available
+                if (cachedFiles) {
+                    console.log('Using cached manifest (fallback)');
+                    return JSON.parse(cachedFiles);
+                }
+                
+                throw error;
+            }
+        }
+
+        // Load and populate dropdown
+        loadManifest()
+            .then(docFiles => {
+                // Populate dropdown with file names
+                docFiles.forEach(file => {
+                    const option = document.createElement('option');
+                    option.value = file;
+                    // Create a user-friendly name by removing .html and formatting
+                    const displayName = file
+                        .replace('.html', '')
+                        .replace(/_enriched$/, '')
+                        .replace(/_/g, ' ')
+                        .replace(/(\d+)-(\d+)-(\d+)/, '$1/$2/$3')
+                        .replace(/\b\w/g, char => char.toUpperCase())
+                        .replace(/Partial$/, '(Partial)');
+                    option.textContent = displayName;
+                    select.appendChild(option);
+                });
+
+                // Check for URL parameter first
+                const urlParams = new URLSearchParams(window.location.search);
+                const docParam = urlParams.get('doc');
+                
+                if (docParam && docFiles.includes(docParam)) {
+                    // Load document from URL parameter
+                    select.value = docParam;
+                    select.dispatchEvent(new Event('change'));
+                } else if (docFiles.length > 0) {
+                    // Auto-load the first file (newest)
+                    select.value = docFiles[0];
+                    select.dispatchEvent(new Event('change'));
+                }
+            })
+            .catch(error => {
+                console.error('Error loading file list:', error);
+                contentFrame.innerHTML = '<div class="error">Error loading document list. Please check that docs/files.json exists.</div>';
+            });
+
+        // --- Search functionality ---
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
+        let searchCache = {}; // filename -> [{title, titleHtml, org}]
+        let searchDebounce = null;
+
+        // Extract display name (week date) from filename
+        function weekLabel(filename) {
+            return filename
+                .replace('.html', '')
+                .replace(/_enriched$/, '')
+                .replace(/_/g, ' ')
+                .replace(/(\d+)-(\d+)-(\d+)/, '$1/$2/$3')
+                .replace(/\b\w/g, c => c.toUpperCase())
+                .replace(/Partial$/, '(Partial)');
+        }
+
+        // Fetch and parse opportunity titles from an HTML file
+        async function parseOpportunities(filename) {
+            if (searchCache[filename]) return searchCache[filename];
+            const resp = await fetch('docs/' + filename);
+            const html = await resp.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const rows = doc.querySelectorAll('tbody tr');
+            const results = [];
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length < 2) return;
+                const titleCell = cells[0];
+                const link = titleCell.querySelector('a');
+                const title = titleCell.textContent.trim();
+                const href = link ? link.getAttribute('href') : '';
+                const org = cells[1] ? cells[1].textContent.trim() : '';
+                results.push({ title, href, org });
+            });
+            searchCache[filename] = results;
+            return results;
+        }
+
+        // Highlight matching text
+        function highlightMatch(text, query) {
+            const idx = text.toLowerCase().indexOf(query.toLowerCase());
+            if (idx === -1) return document.createTextNode(text);
+            const frag = document.createDocumentFragment();
+            frag.appendChild(document.createTextNode(text.substring(0, idx)));
+            const mark = document.createElement('mark');
+            mark.textContent = text.substring(idx, idx + query.length);
+            frag.appendChild(mark);
+            frag.appendChild(document.createTextNode(text.substring(idx + query.length)));
+            return frag;
+        }
+
+        async function doSearch(query) {
+            searchResults.innerHTML = '';
+            if (!query || query.length < 2) {
+                searchResults.classList.remove('visible');
+                return;
+            }
+
+            searchResults.innerHTML = '<div class="search-status">Searching...</div>';
+            searchResults.classList.add('visible');
+
+            // Get all files from the dropdown
+            const files = Array.from(select.options)
+                .map(o => o.value)
+                .filter(v => v);
+
+            const q = query.toLowerCase();
+            let totalMatches = 0;
+            const fragment = document.createDocumentFragment();
+
+            for (const file of files) {
+                let opps;
+                try {
+                    opps = await parseOpportunities(file);
+                } catch (e) {
+                    continue;
+                }
+                const matches = opps.filter(o => o.title.toLowerCase().includes(q));
+                if (matches.length === 0) continue;
+
+                totalMatches += matches.length;
+
+                // Week header divider
+                const header = document.createElement('div');
+                header.className = 'search-week-header';
+                header.textContent = weekLabel(file) + ' (' + matches.length + ')';
+                fragment.appendChild(header);
+
+                matches.forEach(m => {
+                    const item = document.createElement('div');
+                    item.className = 'search-result-item';
+
+                    const link = document.createElement('a');
+                    if (m.href) {
+                        link.href = m.href;
+                        link.target = '_blank';
+                    }
+                    link.appendChild(highlightMatch(m.title, query));
+                    item.appendChild(link);
+
+                    if (m.org) {
+                        const orgDiv = document.createElement('div');
+                        orgDiv.className = 'search-result-org';
+                        orgDiv.textContent = m.org;
+                        item.appendChild(orgDiv);
+                    }
+
+                    // Clicking the row (not the link) loads that week's report
+                    item.addEventListener('click', function(e) {
+                        if (e.target.tagName !== 'A') {
+                            select.value = file;
+                            select.dispatchEvent(new Event('change'));
+                            searchResults.classList.remove('visible');
+                        }
+                    });
+
+                    fragment.appendChild(item);
+                });
+            }
+
+            searchResults.innerHTML = '';
+            if (totalMatches === 0) {
+                searchResults.innerHTML = '<div class="search-status">No matches found</div>';
+            } else {
+                searchResults.appendChild(fragment);
+            }
+        }
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchDebounce);
+            searchDebounce = setTimeout(() => doSearch(this.value.trim()), 300);
+        });
+
+        // Close results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                searchResults.classList.remove('visible');
+            }
+        });
+
+        // Re-show results on focus if there's a query
+        searchInput.addEventListener('focus', function() {
+            if (this.value.trim().length >= 2 && searchResults.children.length > 0) {
+                searchResults.classList.add('visible');
+            }
+        });
+
+        // Handle selection change
+        select.addEventListener('change', function() {
+            const selectedFile = this.value;
+            
+            if (!selectedFile) {
+                contentFrame.innerHTML = '<div class="loading">Select a document from the dropdown menu above</div>';
+                return;
+            }
+
+            // Load the selected HTML file in an iframe
+            contentFrame.innerHTML = `<iframe src="docs/${selectedFile}" title="${selectedFile}"></iframe>`;
+        });
+    </script>
+</body>
+</html>

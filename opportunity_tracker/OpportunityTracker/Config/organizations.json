@@ -1,0 +1,478 @@
+{
+  "organizations": {
+    "darpa": {
+      "canonical_name": "Defense Advanced Research Projects Agency (DARPA)",
+      "acronym": "DARPA",
+      "parent_agency": "Department of Defense",
+      "aliases": [
+        "DARPA",
+        "Defense Advanced Research Projects Agency",
+        "D.A.R.P.A."
+      ],
+      "mission": "DARPA's mission is to create breakthrough technologies and capabilities for national security. DARPA explicitly reaches for transformational change instead of incremental advances.",
+      "website": "https://www.darpa.mil",
+      "funding_sources": [
+        {
+          "name": "RDT&E Defense-Wide",
+          "budget_line": "0400"
+        },
+        {
+          "name": "DARPA Direct Appropriation"
+        }
+      ],
+      "fy2024_budget_millions": 4100,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 221 - DARPA research priorities",
+        "FY2024 NDAA Sec. 222 - Emerging technology investments"
+      ],
+      "focus_areas": [
+        "Emerging technologies",
+        "Artificial intelligence",
+        "Hypersonics",
+        "Space systems",
+        "Quantum computing"
+      ]
+    },
+    "afrl": {
+      "canonical_name": "Air Force Research Laboratory (AFRL)",
+      "acronym": "AFRL",
+      "parent_agency": "Department of the Air Force",
+      "aliases": [
+        "AFRL",
+        "Air Force Research Laboratory",
+        "AF Research Lab"
+      ],
+      "mission": "AFRL leads the discovery, development, and integration of affordable warfighting technologies for America's air, space, and cyberspace forces.",
+      "website": "https://www.afrl.af.mil",
+      "funding_sources": [
+        {
+          "name": "RDT&E Air Force",
+          "budget_line": "3600"
+        }
+      ],
+      "fy2024_budget_millions": 3800,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 211 - Air Force S&T programs"
+      ],
+      "focus_areas": [
+        "Directed energy",
+        "Autonomous systems",
+        "Space vehicles",
+        "Materials and manufacturing"
+      ]
+    },
+    "afwerx": {
+      "canonical_name": "AFWERX",
+      "acronym": "AFWERX",
+      "parent_agency": "Department of the Air Force",
+      "aliases": [
+        "AFWERX",
+        "AF WERX"
+      ],
+      "mission": "AFWERX serves as the innovation arm of the Department of the Air Force, connecting innovators across government, industry, and academia to foster a culture of innovation.",
+      "website": "https://www.afwerx.com",
+      "funding_sources": [
+        {
+          "name": "Air Force SBIR/STTR"
+        },
+        {
+          "name": "AFWERX Challenge Funds"
+        }
+      ],
+      "fy2024_budget_millions": 450,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 873 - SBIR/STTR program modifications"
+      ],
+      "focus_areas": [
+        "SBIR/STTR",
+        "Open Topic",
+        "Dual-use technology",
+        "Commercial solutions"
+      ]
+    },
+    "spacewerx": {
+      "canonical_name": "SpaceWERX",
+      "acronym": "SpaceWERX",
+      "parent_agency": "United States Space Force",
+      "aliases": [
+        "SpaceWERX",
+        "Space WERX",
+        "USSF SpaceWERX"
+      ],
+      "mission": "SpaceWERX is the innovation arm of the United States Space Force, designed to cultivate transformational opportunities with industry at the speed of mission need.",
+      "website": "https://spacewerx.us",
+      "funding_sources": [
+        {
+          "name": "Space Force SBIR/STTR"
+        },
+        {
+          "name": "Orbital Prime"
+        },
+        {
+          "name": "STRATFI"
+        }
+      ],
+      "fy2024_budget_millions": 200,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 1601 - Space Force innovation authorities"
+      ],
+      "focus_areas": [
+        "On-orbit servicing",
+        "Space domain awareness",
+        "Satellite communications",
+        "Space launch"
+      ]
+    },
+    "mda": {
+      "canonical_name": "Missile Defense Agency (MDA)",
+      "acronym": "MDA",
+      "parent_agency": "Department of Defense",
+      "aliases": [
+        "MDA",
+        "Missile Defense Agency"
+      ],
+      "mission": "The Missile Defense Agency develops and deploys a layered Missile Defense System to defend the United States, its deployed forces, allies, and friends from missile attacks.",
+      "website": "https://www.mda.mil",
+      "funding_sources": [
+        {
+          "name": "Missile Defense Agency RDT&E",
+          "budget_line": "0400"
+        }
+      ],
+      "fy2024_budget_millions": 11500,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 1681 - Missile defense requirements",
+        "FY2024 NDAA Sec. 1682 - Space-based missile tracking"
+      ],
+      "focus_areas": [
+        "Ballistic missile defense",
+        "Hypersonic defense",
+        "Space-based sensors",
+        "Tracking and discrimination"
+      ]
+    },
+    "diu": {
+      "canonical_name": "Defense Innovation Unit (DIU)",
+      "acronym": "DIU",
+      "parent_agency": "Department of Defense",
+      "aliases": [
+        "DIU",
+        "Defense Innovation Unit",
+        "DIUx"
+      ],
+      "mission": "DIU accelerates the adoption of commercial technology across the military services and Department of Defense components to strengthen national security.",
+      "website": "https://www.diu.mil",
+      "funding_sources": [
+        {
+          "name": "Defense-Wide RDT&E"
+        },
+        {
+          "name": "OTA Funding"
+        }
+      ],
+      "fy2024_budget_millions": 150,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 891 - Commercial technology transition"
+      ],
+      "focus_areas": [
+        "Autonomy",
+        "Artificial intelligence",
+        "Space",
+        "Cyber",
+        "Human systems"
+      ]
+    },
+    "ussf": {
+      "canonical_name": "United States Space Force (USSF)",
+      "acronym": "USSF",
+      "parent_agency": "Department of the Air Force",
+      "aliases": [
+        "USSF",
+        "US Space Force",
+        "Space Force"
+      ],
+      "mission": "The United States Space Force is responsible for organizing, training, and equipping Guardians to conduct global space operations that enhance the way joint and coalition forces fight.",
+      "website": "https://www.spaceforce.mil",
+      "funding_sources": [
+        {
+          "name": "Space Force O&M"
+        },
+        {
+          "name": "Space Force RDT&E"
+        },
+        {
+          "name": "Space Force Procurement"
+        }
+      ],
+      "fy2024_budget_millions": 30300,
+      "ndaa_references": [
+        "FY2024 NDAA Title XVI - Space Force provisions"
+      ],
+      "focus_areas": [
+        "Space domain awareness",
+        "Satellite operations",
+        "Space control",
+        "Missile warning"
+      ]
+    },
+    "sda": {
+      "canonical_name": "Space Development Agency (SDA)",
+      "acronym": "SDA",
+      "parent_agency": "Department of Defense / Space Force",
+      "aliases": [
+        "SDA",
+        "Space Development Agency"
+      ],
+      "mission": "SDA delivers space-based capabilities that preserve strategic technology advantages by outpacing adversary threats using a new approach to national security space acquisition.",
+      "website": "https://www.sda.mil",
+      "funding_sources": [
+        {
+          "name": "SDA RDT&E"
+        },
+        {
+          "name": "Proliferated Warfighter Space Architecture (PWSA)"
+        }
+      ],
+      "fy2024_budget_millions": 4500,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 1611 - SDA transfer to Space Force",
+        "FY2024 NDAA Sec. 1612 - Proliferated LEO architecture"
+      ],
+      "focus_areas": [
+        "Transport layer",
+        "Tracking layer",
+        "Proliferated LEO",
+        "Mesh networks"
+      ]
+    },
+    "nga": {
+      "canonical_name": "National Geospatial-Intelligence Agency (NGA)",
+      "acronym": "NGA",
+      "parent_agency": "Department of Defense",
+      "aliases": [
+        "NGA",
+        "National Geospatial-Intelligence Agency"
+      ],
+      "mission": "NGA delivers world-class geospatial intelligence (GEOINT) that provides a decisive advantage to policymakers, warfighters, intelligence professionals, and first responders.",
+      "website": "https://www.nga.mil",
+      "funding_sources": [
+        {
+          "name": "National Intelligence Program"
+        },
+        {
+          "name": "Military Intelligence Program"
+        }
+      ],
+      "fy2024_budget_millions": null,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 1631 - GEOINT modernization"
+      ],
+      "focus_areas": [
+        "Geospatial intelligence",
+        "Imagery analysis",
+        "GEOINT services",
+        "Foundation data"
+      ]
+    },
+    "nro": {
+      "canonical_name": "National Reconnaissance Office (NRO)",
+      "acronym": "NRO",
+      "parent_agency": "Department of Defense",
+      "aliases": [
+        "NRO",
+        "National Reconnaissance Office"
+      ],
+      "mission": "The NRO designs, builds, launches, and maintains America's intelligence satellites. The NRO provides intelligence data to the Intelligence Community and Department of Defense.",
+      "website": "https://www.nro.gov",
+      "funding_sources": [
+        {
+          "name": "National Intelligence Program"
+        }
+      ],
+      "fy2024_budget_millions": null,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 1621 - NRO acquisition authorities"
+      ],
+      "focus_areas": [
+        "Reconnaissance satellites",
+        "Signals intelligence",
+        "Imagery intelligence",
+        "Ground systems"
+      ]
+    },
+    "nsa": {
+      "canonical_name": "National Security Agency (NSA)",
+      "acronym": "NSA",
+      "parent_agency": "Department of Defense",
+      "aliases": [
+        "NSA",
+        "National Security Agency"
+      ],
+      "mission": "NSA leads the U.S. Government in cryptology, including signals intelligence (SIGINT) and information assurance products and services.",
+      "website": "https://www.nsa.gov",
+      "funding_sources": [
+        {
+          "name": "National Intelligence Program"
+        }
+      ],
+      "fy2024_budget_millions": null,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 1501 - Cybersecurity provisions"
+      ],
+      "focus_areas": [
+        "Signals intelligence",
+        "Cybersecurity",
+        "Cryptography",
+        "Information assurance"
+      ]
+    },
+    "spoc": {
+      "canonical_name": "Space Operations Command (SpOC)",
+      "acronym": "SpOC",
+      "parent_agency": "United States Space Force",
+      "aliases": [
+        "SpOC",
+        "Space Operations Command"
+      ],
+      "mission": "SpOC is the primary force provider for combatant commanders, providing trained and ready operational space forces.",
+      "website": "https://www.spoc.spaceforce.mil",
+      "funding_sources": [
+        {
+          "name": "Space Force O&M"
+        }
+      ],
+      "fy2024_budget_millions": null,
+      "ndaa_references": [],
+      "focus_areas": [
+        "Satellite operations",
+        "Space domain awareness",
+        "Orbital warfare"
+      ]
+    },
+    "ssc": {
+      "canonical_name": "Space Systems Command (SSC)",
+      "acronym": "SSC",
+      "parent_agency": "United States Space Force",
+      "aliases": [
+        "SSC",
+        "Space Systems Command",
+        "Space and Missile Systems Center",
+        "SMC"
+      ],
+      "mission": "SSC is responsible for developing, acquiring, equipping, fielding, and sustaining lethal and resilient space capabilities.",
+      "website": "https://www.ssc.spaceforce.mil",
+      "funding_sources": [
+        {
+          "name": "Space Force Procurement"
+        },
+        {
+          "name": "Space Force RDT&E"
+        }
+      ],
+      "fy2024_budget_millions": 16000,
+      "ndaa_references": [
+        "FY2024 NDAA Sec. 1631 - Space acquisition reform"
+      ],
+      "focus_areas": [
+        "GPS",
+        "Satellite communications",
+        "Launch services",
+        "Space domain awareness"
+      ]
+    },
+    "starcom": {
+      "canonical_name": "Space Training and Readiness Command (STARCOM)",
+      "acronym": "STARCOM",
+      "parent_agency": "United States Space Force",
+      "aliases": [
+        "STARCOM",
+        "Space Training and Readiness Command"
+      ],
+      "mission": "STARCOM is responsible for preparing Guardians to deliver combat relevant space capabilities to combatant commanders.",
+      "website": "https://www.starcom.spaceforce.mil",
+      "funding_sources": [
+        {
+          "name": "Space Force O&M"
+        }
+      ],
+      "fy2024_budget_millions": null,
+      "ndaa_references": [],
+      "focus_areas": [
+        "Training",
+        "Doctrine",
+        "Test and evaluation"
+      ]
+    },
+    "rco": {
+      "canonical_name": "Rapid Capabilities Office (RCO)",
+      "acronym": "RCO",
+      "parent_agency": "Department of the Air Force",
+      "aliases": [
+        "RCO",
+        "Rapid Capabilities Office",
+        "Air Force RCO"
+      ],
+      "mission": "RCO expedites development and fielding of select Air Force combat support and weapon systems through rapid acquisition.",
+      "website": "https://www.rco.af.mil",
+      "funding_sources": [
+        {
+          "name": "Air Force RDT&E"
+        },
+        {
+          "name": "Rapid Prototyping Funds"
+        }
+      ],
+      "fy2024_budget_millions": 800,
+      "ndaa_references": [],
+      "focus_areas": [
+        "Rapid prototyping",
+        "Advanced weapons",
+        "Classified programs"
+      ]
+    },
+    "stratfi": {
+      "canonical_name": "Strategic Financing (STRATFI)",
+      "acronym": "STRATFI",
+      "parent_agency": "AFWERX / SpaceWERX",
+      "aliases": [
+        "STRATFI",
+        "Strategic Financing"
+      ],
+      "mission": "STRATFI combines private capital with government funds to accelerate the transition of critical technologies from development to deployment.",
+      "website": null,
+      "funding_sources": [
+        {
+          "name": "Air Force/Space Force SBIR"
+        },
+        {
+          "name": "Private Investment Matching"
+        }
+      ],
+      "fy2024_budget_millions": null,
+      "ndaa_references": [],
+      "focus_areas": [
+        "Technology transition",
+        "Dual-use technology",
+        "Scale-up funding"
+      ]
+    },
+    "apfit": {
+      "canonical_name": "Air Force Prime/Fit (APFIT)",
+      "acronym": "APFIT",
+      "parent_agency": "Department of the Air Force",
+      "aliases": [
+        "APFIT",
+        "Air Force Prime"
+      ],
+      "mission": "APFIT supports rapid integration of commercial technologies into Air Force platforms and systems.",
+      "website": null,
+      "funding_sources": [],
+      "fy2024_budget_millions": null,
+      "ndaa_references": [],
+      "focus_areas": [
+        "Platform integration",
+        "Commercial technology"
+      ]
+    }
+  }
+}
