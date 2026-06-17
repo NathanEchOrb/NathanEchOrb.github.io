@@ -701,33 +701,60 @@
 
             const style = doc.createElement('style');
             style.textContent = `
-                .star-container { display: inline-flex; align-items: center; margin-right: 6px; vertical-align: middle; }
-                .star-btn { cursor: pointer; font-size: 16px; border: none; background: none; padding: 0 2px; color: #555; transition: transform 0.15s, color 0.15s; line-height: 1; }
+                .star-cell { text-align: center; width: 40px; min-width: 40px; white-space: nowrap; }
+                .star-btn { cursor: pointer; font-size: 16px; border: none; background: none; padding: 0; color: #555; transition: transform 0.15s, color 0.15s; line-height: 1; }
                 .star-btn:hover { transform: scale(1.3); color: #ffd700; }
                 .star-btn.starred { color: #ffd700; }
-                .star-count { font-size: 11px; color: #ffd700; margin-left: 2px; font-weight: bold; }
+                .star-count { font-size: 11px; color: #ffd700; margin-left: 1px; font-weight: bold; }
+                th.star-header { width: 40px; min-width: 40px; text-align: center; }
             `;
             doc.head.appendChild(style);
 
-            const rows = doc.querySelectorAll('tbody tr:not(.week-divider)');
+            const headerRow = doc.querySelector('thead tr');
+            if (headerRow) {
+                const starTh = doc.createElement('th');
+                starTh.className = 'star-header';
+                starTh.textContent = '★';
+                headerRow.insertBefore(starTh, headerRow.firstChild);
+            }
+
+            const rows = doc.querySelectorAll('tbody tr');
             rows.forEach(row => {
+                if (row.classList.contains('week-divider')) {
+                    const cell = row.querySelector('td');
+                    if (cell) {
+                        const currentSpan = parseInt(cell.getAttribute('colspan') || '1');
+                        cell.setAttribute('colspan', currentSpan + 1);
+                    }
+                    return;
+                }
+
                 const firstCell = row.querySelector('td');
                 if (!firstCell) return;
                 const link = firstCell.querySelector('a[href*="sam.gov"]');
-                if (!link) return;
+                if (!link) {
+                    const emptyTd = doc.createElement('td');
+                    emptyTd.className = 'star-cell';
+                    row.insertBefore(emptyTd, row.firstChild);
+                    return;
+                }
 
                 const href = link.getAttribute('href');
                 const match = href.match(/opp\/([a-f0-9]+)/);
-                if (!match) return;
+                if (!match) {
+                    const emptyTd = doc.createElement('td');
+                    emptyTd.className = 'star-cell';
+                    row.insertBefore(emptyTd, row.firstChild);
+                    return;
+                }
 
                 const oppId = match[1];
                 const users = starsCache[oppId] || [];
                 const username = localStorage.getItem('starUsername');
                 const isStarred = username && users.includes(username);
 
-                const container = doc.createElement('span');
-                container.className = 'star-container';
-                container.setAttribute('data-opp-id', oppId);
+                const td = doc.createElement('td');
+                td.className = 'star-cell';
 
                 const btn = doc.createElement('button');
                 btn.className = 'star-btn' + (isStarred ? ' starred' : '');
@@ -743,9 +770,9 @@
                 countEl.className = 'star-count';
                 countEl.textContent = users.length > 0 ? users.length : '';
 
-                container.appendChild(btn);
-                container.appendChild(countEl);
-                firstCell.insertBefore(container, firstCell.firstChild);
+                td.appendChild(btn);
+                td.appendChild(countEl);
+                row.insertBefore(td, row.firstChild);
             });
         }
 
