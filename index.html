@@ -705,7 +705,10 @@
                 .star-btn { cursor: pointer; font-size: 16px; border: none; background: none; padding: 0; color: #555; transition: transform 0.15s, color 0.15s; line-height: 1; }
                 .star-btn:hover { transform: scale(1.3); color: #ffd700; }
                 .star-btn.starred { color: #ffd700; }
+                .star-btn.bill-starred { color: #4CAF50; }
+                .star-btn.bill-starred:hover { color: #66BB6A; }
                 .star-count { font-size: 11px; color: #ffd700; margin-left: 1px; font-weight: bold; }
+                .star-count.bill-starred { color: #4CAF50; }
                 th.star-header { width: 40px; min-width: 40px; text-align: center; }
             `;
             doc.head.appendChild(style);
@@ -756,8 +759,10 @@
                 const td = doc.createElement('td');
                 td.className = 'star-cell';
 
+                const hasBill = users.some(u => u.toLowerCase().includes('bill'));
+
                 const btn = doc.createElement('button');
-                btn.className = 'star-btn' + (isStarred ? ' starred' : '');
+                btn.className = 'star-btn' + (isStarred ? ' starred' : '') + (hasBill ? ' bill-starred' : '');
                 btn.textContent = isStarred ? '★' : '☆';
                 btn.title = users.length > 0 ? users.join(', ') : 'Click to star';
                 btn.addEventListener('click', (e) => {
@@ -767,7 +772,7 @@
                 });
 
                 const countEl = doc.createElement('span');
-                countEl.className = 'star-count';
+                countEl.className = 'star-count' + (hasBill ? ' bill-starred' : '');
                 countEl.textContent = users.length > 0 ? users.length : '';
 
                 td.appendChild(btn);
@@ -851,10 +856,12 @@
 
                 const users = starsCache[oppId] || [];
                 const isStarred = users.includes(localStorage.getItem('starUsername'));
+                const hasBill = users.some(u => u.toLowerCase().includes('bill'));
 
-                btn.className = 'star-btn' + (isStarred ? ' starred' : '');
+                btn.className = 'star-btn' + (isStarred ? ' starred' : '') + (hasBill ? ' bill-starred' : '');
                 btn.textContent = isStarred ? '★' : '☆';
                 btn.title = users.length > 0 ? users.join(', ') : 'Click to star';
+                countEl.className = 'star-count' + (hasBill ? ' bill-starred' : '');
                 countEl.textContent = users.length > 0 ? users.length : '';
             } catch (err) {
                 console.error('Star toggle failed:', err);
