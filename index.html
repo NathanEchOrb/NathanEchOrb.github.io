@@ -291,6 +291,73 @@
             font-size: 1.1rem;
         }
 
+        .credential-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .credential-dialog {
+            background: #1e2130;
+            border: 1px solid #34495e;
+            border-radius: 8px;
+            padding: 2rem;
+            min-width: 320px;
+            color: #ecf0f1;
+        }
+
+        .credential-dialog h3 {
+            margin: 0 0 1rem 0;
+            color: #ffd700;
+        }
+
+        .credential-dialog label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+
+        .credential-dialog input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #34495e;
+            border-radius: 4px;
+            background: #34495e;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .credential-dialog .btn-row {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .credential-dialog button {
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .credential-dialog .btn-ok {
+            background: #ffd700;
+            color: #1e2130;
+            font-weight: 600;
+        }
+
+        .credential-dialog .btn-cancel {
+            background: #34495e;
+            color: #ecf0f1;
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 padding: 1rem;
@@ -608,7 +675,7 @@
         // Handle selection change
         select.addEventListener('change', function() {
             const selectedFile = this.value;
-            
+
             if (!selectedFile) {
                 contentFrame.innerHTML = '<div class="loading">Select a document from the dropdown menu above</div>';
                 return;
@@ -616,7 +683,156 @@
 
             // Load the selected HTML file in an iframe
             contentFrame.innerHTML = `<iframe src="docs/${selectedFile}" title="${selectedFile}"></iframe>`;
+            const iframe = contentFrame.querySelector('iframe');
+            iframe.addEventListener('load', () => injectStars(iframe.contentDocument));
         });
+
+        // --- Stars functionality ---
+        const WORKER_URL = 'https://opportunity-stars.nathan-44b.workers.dev';
+        let starsCache = {};
+        const starsReady = fetch(WORKER_URL + '/stars')
+            .then(r => r.json())
+            .then(data => { starsCache = data; })
+            .catch(() => { starsCache = {}; });
+
+        async function injectStars(doc) {
+            if (!doc) return;
+            await starsReady;
+
+            const style = doc.createElement('style');
+            style.textContent = `
+                .star-container { display: inline-flex; align-items: center; margin-right: 6px; vertical-align: middle; }
+                .star-btn { cursor: pointer; font-size: 16px; border: none; background: none; padding: 0 2px; color: #555; transition: transform 0.15s, color 0.15s; line-height: 1; }
+                .star-btn:hover { transform: scale(1.3); color: #ffd700; }
+                .star-btn.starred { color: #ffd700; }
+                .star-count { font-size: 11px; color: #ffd700; margin-left: 2px; font-weight: bold; }
+            `;
+            doc.head.appendChild(style);
+
+            const rows = doc.querySelectorAll('tbody tr:not(.week-divider)');
+            rows.forEach(row => {
+                const firstCell = row.querySelector('td');
+                if (!firstCell) return;
+                const link = firstCell.querySelector('a[href*="sam.gov"]');
+                if (!link) return;
+
+                const href = link.getAttribute('href');
+                const match = href.match(/opp\/([a-f0-9]+)/);
+                if (!match) return;
+
+                const oppId = match[1];
+                const users = starsCache[oppId] || [];
+                const username = localStorage.getItem('starUsername');
+                const isStarred = username && users.includes(username);
+
+                const container = doc.createElement('span');
+                container.className = 'star-container';
+                container.setAttribute('data-opp-id', oppId);
+
+                const btn = doc.createElement('button');
+                btn.className = 'star-btn' + (isStarred ? ' starred' : '');
+                btn.textContent = isStarred ? '★' : '☆';
+                btn.title = users.length > 0 ? users.join(', ') : 'Click to star';
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleStar(oppId, btn, countEl);
+                });
+
+                const countEl = doc.createElement('span');
+                countEl.className = 'star-count';
+                countEl.textContent = users.length > 0 ? users.length : '';
+
+                container.appendChild(btn);
+                container.appendChild(countEl);
+                firstCell.insertBefore(container, firstCell.firstChild);
+            });
+        }
+
+        function promptCredentials() {
+            return new Promise((resolve) => {
+                const overlay = document.createElement('div');
+                overlay.className = 'credential-overlay';
+                overlay.innerHTML = `
+                    <div class="credential-dialog">
+                        <h3>★ Star Setup</h3>
+                        <label for="cred-user">Your display name</label>
+                        <input id="cred-user" type="text" placeholder="e.g. Nathan" autofocus>
+                        <label for="cred-pass">Shared passphrase</label>
+                        <input id="cred-pass" type="password" placeholder="Enter passphrase">
+                        <div class="btn-row">
+                            <button class="btn-cancel" id="cred-cancel">Cancel</button>
+                            <button class="btn-ok" id="cred-ok">Save</button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+
+                const userInput = overlay.querySelector('#cred-user');
+                const passInput = overlay.querySelector('#cred-pass');
+
+                overlay.querySelector('#cred-ok').addEventListener('click', () => {
+                    const u = userInput.value.trim();
+                    const p = passInput.value;
+                    document.body.removeChild(overlay);
+                    if (u && p) resolve({ username: u, passphrase: p });
+                    else resolve(null);
+                });
+
+                overlay.querySelector('#cred-cancel').addEventListener('click', () => {
+                    document.body.removeChild(overlay);
+                    resolve(null);
+                });
+
+                passInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') overlay.querySelector('#cred-ok').click();
+                });
+            });
+        }
+
+        async function toggleStar(oppId, btn, countEl) {
+            let username = localStorage.getItem('starUsername');
+            let passphrase = localStorage.getItem('starPassphrase');
+
+            if (!username || !passphrase) {
+                const creds = await promptCredentials();
+                if (!creds) return;
+                username = creds.username;
+                passphrase = creds.passphrase;
+                localStorage.setItem('starUsername', username);
+                localStorage.setItem('starPassphrase', passphrase);
+            }
+
+            try {
+                const resp = await fetch(WORKER_URL + '/star', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ oppId, username, passphrase }),
+                });
+
+                if (resp.status === 403) {
+                    localStorage.removeItem('starPassphrase');
+                    const creds = await promptCredentials();
+                    if (!creds) return;
+                    localStorage.setItem('starUsername', creds.username);
+                    localStorage.setItem('starPassphrase', creds.passphrase);
+                    return toggleStar(oppId, btn, countEl);
+                }
+
+                const data = await resp.json();
+                starsCache = data.stars;
+
+                const users = starsCache[oppId] || [];
+                const isStarred = users.includes(localStorage.getItem('starUsername'));
+
+                btn.className = 'star-btn' + (isStarred ? ' starred' : '');
+                btn.textContent = isStarred ? '★' : '☆';
+                btn.title = users.length > 0 ? users.join(', ') : 'Click to star';
+                countEl.textContent = users.length > 0 ? users.length : '';
+            } catch (err) {
+                console.error('Star toggle failed:', err);
+            }
+        }
     </script>
 </body>
 </html>
