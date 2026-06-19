@@ -11,22 +11,38 @@ export default {
     }
 
     const url = new URL(request.url);
+    const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
 
-    if (url.pathname === '/stars' && request.method === 'GET') {
-      const stars = await env.STARS.get('stars', 'json') || {};
-      return new Response(JSON.stringify(stars), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (url.pathname === '/votes' && request.method === 'GET') {
+      const [stars, downvotes] = await Promise.all([
+        env.STARS.get('stars', 'json'),
+        env.STARS.get('downvotes', 'json'),
+      ]);
+      return new Response(JSON.stringify({
+        stars: stars || {},
+        downvotes: downvotes || {},
+      }), { headers: jsonHeaders });
     }
 
-    if (url.pathname === '/star' && request.method === 'POST') {
+    // Legacy endpoint — still works
+    if (url.pathname === '/stars' && request.method === 'GET') {
+      const [stars, downvotes] = await Promise.all([
+        env.STARS.get('stars', 'json'),
+        env.STARS.get('downvotes', 'json'),
+      ]);
+      return new Response(JSON.stringify({
+        stars: stars || {},
+        downvotes: downvotes || {},
+      }), { headers: jsonHeaders });
+    }
+
+    if ((url.pathname === '/star' || url.pathname === '/downvote') && request.method === 'POST') {
       let body;
       try {
         body = await request.json();
       } catch {
         return new Response(JSON.stringify({ error: 'Invalid JSON' }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400, headers: jsonHeaders,
         });
       }
 
@@ -34,20 +50,19 @@ export default {
 
       if (!env.PASSPHRASE || passphrase !== env.PASSPHRASE) {
         return new Response(JSON.stringify({ error: 'Invalid passphrase' }), {
-          status: 403,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 403, headers: jsonHeaders,
         });
       }
 
       if (!oppId || !username) {
         return new Response(JSON.stringify({ error: 'Missing oppId or username' }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 400, headers: jsonHeaders,
         });
       }
 
-      const stars = await env.STARS.get('stars', 'json') || {};
-      const users = stars[oppId] || [];
+      const kvKey = url.pathname === '/star' ? 'stars' : 'downvotes';
+      const data = await env.STARS.get(kvKey, 'json') || {};
+      const users = data[oppId] || [];
 
       const idx = users.indexOf(username);
       if (idx >= 0) {
@@ -57,15 +72,20 @@ export default {
       }
 
       if (users.length === 0) {
-        delete stars[oppId];
+        delete data[oppId];
       } else {
-        stars[oppId] = users;
+        data[oppId] = users;
       }
 
-      await env.STARS.put('stars', JSON.stringify(stars));
+      await env.STARS.put(kvKey, JSON.stringify(data));
 
-      return new Response(JSON.stringify({ stars }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      const [stars, downvotes] = await Promise.all([
+        kvKey === 'stars' ? data : (await env.STARS.get('stars', 'json') || {}),
+        kvKey === 'downvotes' ? data : (await env.STARS.get('downvotes', 'json') || {}),
+      ]);
+
+      return new Response(JSON.stringify({ stars, downvotes }), {
+        headers: jsonHeaders,
       });
     }
 

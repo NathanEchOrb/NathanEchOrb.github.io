@@ -687,39 +687,54 @@
             iframe.addEventListener('load', () => injectStars(iframe.contentDocument));
         });
 
-        // --- Stars functionality ---
+        // --- Stars & Downvotes functionality ---
         const WORKER_URL = 'https://opportunity-stars.nathan-44b.workers.dev';
-        let starsCache = {};
-        const starsReady = fetch(WORKER_URL + '/stars')
+        let votesCache = { stars: {}, downvotes: {} };
+        const votesReady = fetch(WORKER_URL + '/votes')
             .then(r => r.json())
-            .then(data => { starsCache = data; })
-            .catch(() => { starsCache = {}; });
+            .then(data => { votesCache = data; })
+            .catch(() => { votesCache = { stars: {}, downvotes: {} }; });
 
         async function injectStars(doc) {
             if (!doc) return;
-            await starsReady;
+            await votesReady;
 
             const style = doc.createElement('style');
             style.textContent = `
-                .star-cell { text-align: center; width: 40px; min-width: 40px; white-space: nowrap; }
-                .star-btn { cursor: pointer; font-size: 16px; border: none; background: none; padding: 0; color: #555; transition: transform 0.15s, color 0.15s; line-height: 1; }
-                .star-btn:hover { transform: scale(1.3); color: #ffd700; }
-                .star-btn.has-stars { color: #ffd700; }
-                .star-btn.starred { color: #ffd700; }
-                .star-btn.bill-starred { color: #4CAF50; }
-                .star-btn.bill-starred:hover { color: #66BB6A; }
-                .star-count { font-size: 11px; color: #ffd700; margin-left: 1px; font-weight: bold; }
-                .star-count.bill-starred { color: #4CAF50; }
-                th.star-header { width: 40px; min-width: 40px; text-align: center; }
+                .vote-cell { text-align: center; width: 80px; min-width: 80px; white-space: nowrap; }
+                .vote-group { display: inline-flex; align-items: center; }
+                .vote-sep { color: #555; margin: 0 3px; font-size: 15px; }
+                .vote-btn { cursor: pointer; font-size: 20px; border: none; background: none; padding: 0; color: #555; transition: transform 0.15s, color 0.15s; line-height: 1; }
+                .vote-btn:hover { transform: scale(1.3); }
+                .vote-btn.star-hover:hover { color: #ffd700; }
+                .vote-btn.down-hover:hover { color: #42A5F5; }
+                .vote-btn.down-hover { display: inline-block; font-size: 20px; transform: scaleX(1.33); }
+                .vote-btn.down-hover.voted-down { transform: scaleX(2.0); }
+                .vote-btn.down-hover:hover { transform: scaleX(1.33) scale(1.3); }
+                .vote-btn.down-hover.voted-down:hover { transform: scaleX(2.0) scale(1.3); }
+                .vote-btn.has-votes-star { color: #ffd700; }
+                .vote-btn.voted-star { color: #ffd700; }
+                .vote-btn.bill-star { color: #4CAF50; }
+                .vote-btn.bill-star:hover { color: #66BB6A; }
+                .vote-btn.has-votes-down { color: #42A5F5; }
+                .vote-btn.voted-down { color: #42A5F5; }
+                .vote-btn.bill-down { color: #EF5350; }
+                .vote-btn.bill-down:hover { color: #E57373; }
+                .vote-count { font-size: 11px; margin-left: 1px; font-weight: bold; }
+                .vote-count.count-star { color: #ffd700; }
+                .vote-count.count-down { color: #42A5F5; }
+                .vote-count.bill-star { color: #4CAF50; }
+                .vote-count.bill-down { color: #EF5350; }
+                th.vote-header { width: 80px; min-width: 80px; text-align: center; }
             `;
             doc.head.appendChild(style);
 
             const headerRow = doc.querySelector('thead tr');
             if (headerRow) {
-                const starTh = doc.createElement('th');
-                starTh.className = 'star-header';
-                starTh.textContent = '★';
-                headerRow.insertBefore(starTh, headerRow.firstChild);
+                const th = doc.createElement('th');
+                th.className = 'vote-header';
+                th.innerHTML = '★ / ⬇';
+                headerRow.insertBefore(th, headerRow.firstChild);
             }
 
             const rows = doc.querySelectorAll('tbody tr');
@@ -736,50 +751,85 @@
                 const firstCell = row.querySelector('td');
                 if (!firstCell) return;
                 const link = firstCell.querySelector('a[href*="sam.gov"]');
-                if (!link) {
-                    const emptyTd = doc.createElement('td');
-                    emptyTd.className = 'star-cell';
-                    row.insertBefore(emptyTd, row.firstChild);
-                    return;
-                }
 
-                const href = link.getAttribute('href');
-                const match = href.match(/opp\/([a-f0-9]+)/);
-                if (!match) {
-                    const emptyTd = doc.createElement('td');
-                    emptyTd.className = 'star-cell';
-                    row.insertBefore(emptyTd, row.firstChild);
-                    return;
+                let oppId = null;
+                if (link) {
+                    const match = link.getAttribute('href').match(/opp\/([a-f0-9]+)/);
+                    if (match) oppId = match[1];
                 }
-
-                const oppId = match[1];
-                const users = starsCache[oppId] || [];
-                const username = localStorage.getItem('starUsername');
-                const isStarred = username && users.includes(username);
 
                 const td = doc.createElement('td');
-                td.className = 'star-cell';
+                td.className = 'vote-cell';
 
-                const hasBill = users.some(u => u.toLowerCase().includes('bill'));
+                if (!oppId) {
+                    row.insertBefore(td, row.firstChild);
+                    return;
+                }
 
-                const hasStars = users.length > 0;
+                const username = localStorage.getItem('starUsername');
 
-                const btn = doc.createElement('button');
-                btn.className = 'star-btn' + (isStarred ? ' starred' : (hasStars ? ' has-stars' : '')) + (hasBill ? ' bill-starred' : '');
-                btn.textContent = isStarred ? '★' : '☆';
-                btn.title = users.length > 0 ? users.join(', ') : 'Click to star';
-                btn.addEventListener('click', (e) => {
+                // Star group
+                const starUsers = votesCache.stars[oppId] || [];
+                const isStarred = username && starUsers.includes(username);
+                const starHasBill = starUsers.some(u => u.toLowerCase().includes('bill'));
+                const hasStars = starUsers.length > 0;
+
+                const starGroup = doc.createElement('span');
+                starGroup.className = 'vote-group';
+
+                const starBtn = doc.createElement('button');
+                starBtn.className = 'vote-btn star-hover' + (isStarred ? ' voted-star' : (hasStars ? ' has-votes-star' : '')) + (starHasBill ? ' bill-star' : '');
+                starBtn.textContent = isStarred ? '★' : '☆';
+                starBtn.title = hasStars ? starUsers.join(', ') : 'Click to star';
+
+                const starCount = doc.createElement('span');
+                starCount.className = 'vote-count count-star' + (starHasBill ? ' bill-star' : '');
+                starCount.textContent = hasStars ? starUsers.length : '';
+
+                starBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleStar(oppId, btn, countEl);
+                    toggleVote(oppId, 'star', starBtn, starCount);
                 });
 
-                const countEl = doc.createElement('span');
-                countEl.className = 'star-count' + (hasBill ? ' bill-starred' : '');
-                countEl.textContent = users.length > 0 ? users.length : '';
+                starGroup.appendChild(starBtn);
+                starGroup.appendChild(starCount);
 
-                td.appendChild(btn);
-                td.appendChild(countEl);
+                // Separator
+                const sep = doc.createElement('span');
+                sep.className = 'vote-sep';
+                sep.textContent = '/';
+
+                // Downvote group
+                const downUsers = votesCache.downvotes[oppId] || [];
+                const isDownvoted = username && downUsers.includes(username);
+                const downHasBill = downUsers.some(u => u.toLowerCase().includes('bill'));
+                const hasDownvotes = downUsers.length > 0;
+
+                const downGroup = doc.createElement('span');
+                downGroup.className = 'vote-group';
+
+                const downBtn = doc.createElement('button');
+                downBtn.className = 'vote-btn down-hover' + (isDownvoted ? ' voted-down' : (hasDownvotes ? ' has-votes-down' : '')) + (downHasBill ? ' bill-down' : '');
+                downBtn.textContent = isDownvoted ? '⬇' : '⇩';
+                downBtn.title = hasDownvotes ? downUsers.join(', ') : 'Click to downvote';
+
+                const downCount = doc.createElement('span');
+                downCount.className = 'vote-count count-down' + (downHasBill ? ' bill-down' : '');
+                downCount.textContent = hasDownvotes ? downUsers.length : '';
+
+                downBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleVote(oppId, 'downvote', downBtn, downCount);
+                });
+
+                downGroup.appendChild(downBtn);
+                downGroup.appendChild(downCount);
+
+                td.appendChild(starGroup);
+                td.appendChild(sep);
+                td.appendChild(downGroup);
                 row.insertBefore(td, row.firstChild);
             });
         }
@@ -825,7 +875,7 @@
             });
         }
 
-        async function toggleStar(oppId, btn, countEl) {
+        async function toggleVote(oppId, type, btn, countEl) {
             let username = localStorage.getItem('starUsername');
             let passphrase = localStorage.getItem('starPassphrase');
 
@@ -838,8 +888,10 @@
                 localStorage.setItem('starPassphrase', passphrase);
             }
 
+            const endpoint = type === 'star' ? '/star' : '/downvote';
+
             try {
-                const resp = await fetch(WORKER_URL + '/star', {
+                const resp = await fetch(WORKER_URL + endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ oppId, username, passphrase }),
@@ -851,24 +903,32 @@
                     if (!creds) return;
                     localStorage.setItem('starUsername', creds.username);
                     localStorage.setItem('starPassphrase', creds.passphrase);
-                    return toggleStar(oppId, btn, countEl);
+                    return toggleVote(oppId, type, btn, countEl);
                 }
 
                 const data = await resp.json();
-                starsCache = data.stars;
+                votesCache = data;
 
-                const users = starsCache[oppId] || [];
-                const isStarred = users.includes(localStorage.getItem('starUsername'));
+                const cacheKey = type === 'star' ? 'stars' : 'downvotes';
+                const users = votesCache[cacheKey][oppId] || [];
+                const isVoted = users.includes(localStorage.getItem('starUsername'));
                 const hasBill = users.some(u => u.toLowerCase().includes('bill'));
+                const hasVotes = users.length > 0;
 
-                const hasStars = users.length > 0;
-                btn.className = 'star-btn' + (isStarred ? ' starred' : (hasStars ? ' has-stars' : '')) + (hasBill ? ' bill-starred' : '');
-                btn.textContent = isStarred ? '★' : '☆';
-                btn.title = users.length > 0 ? users.join(', ') : 'Click to star';
-                countEl.className = 'star-count' + (hasBill ? ' bill-starred' : '');
-                countEl.textContent = users.length > 0 ? users.length : '';
+                if (type === 'star') {
+                    btn.className = 'vote-btn star-hover' + (isVoted ? ' voted-star' : (hasVotes ? ' has-votes-star' : '')) + (hasBill ? ' bill-star' : '');
+                    btn.textContent = isVoted ? '★' : '☆';
+                    btn.title = hasVotes ? users.join(', ') : 'Click to star';
+                    countEl.className = 'vote-count count-star' + (hasBill ? ' bill-star' : '');
+                } else {
+                    btn.className = 'vote-btn down-hover' + (isVoted ? ' voted-down' : (hasVotes ? ' has-votes-down' : '')) + (hasBill ? ' bill-down' : '');
+                    btn.textContent = isVoted ? '⬇' : '⇩';
+                    btn.title = hasVotes ? users.join(', ') : 'Click to downvote';
+                    countEl.className = 'vote-count count-down' + (hasBill ? ' bill-down' : '');
+                }
+                countEl.textContent = hasVotes ? users.length : '';
             } catch (err) {
-                console.error('Star toggle failed:', err);
+                console.error('Vote toggle failed:', err);
             }
         }
     </script>
