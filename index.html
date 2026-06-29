@@ -687,13 +687,13 @@
             iframe.addEventListener('load', () => injectStars(iframe.contentDocument));
         });
 
-        // --- Stars & Downvotes functionality ---
+        // --- Stars, Meh & Downvotes functionality ---
         const WORKER_URL = 'https://opportunity-stars.nathan-44b.workers.dev';
-        let votesCache = { stars: {}, downvotes: {} };
+        let votesCache = { stars: {}, downvotes: {}, mehs: {} };
         const votesReady = fetch(WORKER_URL + '/votes')
             .then(r => r.json())
             .then(data => { votesCache = data; })
-            .catch(() => { votesCache = { stars: {}, downvotes: {} }; });
+            .catch(() => { votesCache = { stars: {}, downvotes: {}, mehs: {} }; });
 
         async function injectStars(doc) {
             if (!doc) return;
@@ -701,38 +701,90 @@
 
             const style = doc.createElement('style');
             style.textContent = `
-                .vote-cell { text-align: center; width: 80px; min-width: 80px; white-space: nowrap; }
+                .vote-cell { text-align: center; width: 120px; min-width: 120px; white-space: nowrap; }
                 .vote-group { display: inline-flex; align-items: center; }
-                .vote-sep { color: #555; margin: 0 3px; font-size: 15px; }
+                .vote-sep { color: #555; margin: 0 2px; font-size: 15px; }
                 .vote-btn { cursor: pointer; font-size: 20px; border: none; background: none; padding: 0; color: #555; transition: transform 0.15s, color 0.15s; line-height: 1; }
                 .vote-btn:hover { transform: scale(1.3); }
                 .vote-btn.star-hover:hover { color: #ffd700; }
+                .vote-btn.meh-hover:hover { color: #B0824A; }
                 .vote-btn.down-hover:hover { color: #42A5F5; }
                 .vote-btn.down-hover { display: inline-block; font-size: 20px; transform: scaleX(1.33); }
                 .vote-btn.down-hover.has-votes { transform: scaleX(2.0); }
                 .vote-btn.down-hover:hover { transform: scaleX(1.33) scale(1.3); }
                 .vote-btn.down-hover.has-votes:hover { transform: scaleX(2.0) scale(1.3); }
                 .vote-btn.has-votes.star-hover { color: #ffd700; }
+                .vote-btn.has-votes.meh-hover { color: #B0824A; }
                 .vote-btn.has-votes.down-hover { color: #42A5F5; }
                 .vote-btn.has-votes.bill-star { color: #4CAF50; }
                 .vote-btn.bill-star:hover { color: #66BB6A; }
+                .vote-btn.has-votes.bill-meh { color: #FF9800; }
+                .vote-btn.bill-meh:hover { color: #FFB74D; }
                 .vote-btn.has-votes.bill-down { color: #EF5350; }
                 .vote-btn.bill-down:hover { color: #E57373; }
                 .vote-count.my-vote { text-decoration: underline; text-underline-offset: 2px; }
                 .vote-count { font-size: 11px; margin-left: 1px; font-weight: bold; }
                 .vote-count.count-star { color: #ffd700; }
+                .vote-count.count-meh { color: #B0824A; }
                 .vote-count.count-down { color: #42A5F5; }
                 .vote-count.bill-star { color: #4CAF50; }
+                .vote-count.bill-meh { color: #FF9800; }
                 .vote-count.bill-down { color: #EF5350; }
-                th.vote-header { width: 80px; min-width: 80px; text-align: center; }
+                th.vote-header { width: 120px; min-width: 120px; text-align: center; }
+                .filter-btn { background: #333; color: #888; border: 1px solid #555; padding: 0; width: 36px; height: 28px; cursor: pointer; font-size: 14px; border-radius: 4px; margin-right: 6px; transition: all 0.15s; display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; }
+                .filter-btn-star { font-size: 18px; }
+                .filter-btn-down { display: inline-block; transform: scaleX(2.0); font-size: 14px; }
+                .filter-btn:hover { background: #444; color: #ccc; }
+                .filter-btn.active-star { background: #3a3520; color: #ffd700; border-color: #ffd700; }
+                .filter-btn.active-meh { background: #3a2f20; color: #B0824A; border-color: #B0824A; }
+                .filter-btn.active-down { background: #1e2d3d; color: #42A5F5; border-color: #42A5F5; }
             `;
             doc.head.appendChild(style);
+
+            // Inject filter buttons next to the Expand Details button
+            const buttonRow = doc.querySelector('.button-row');
+            if (buttonRow) {
+                const filterContainer = doc.createElement('span');
+                filterContainer.style.marginRight = '12px';
+
+                const filters = [
+                    { type: 'star', label: '★', activeClass: 'active-star', spanClass: 'filter-btn-star' },
+                    { type: 'meh', label: '◉', activeClass: 'active-meh', spanClass: '' },
+                    { type: 'down', label: '⬇', activeClass: 'active-down', spanClass: 'filter-btn-down' },
+                ];
+
+                let activeFilter = null;
+
+                filters.forEach(f => {
+                    const btn = doc.createElement('button');
+                    btn.className = 'filter-btn';
+                    const labelSpan = doc.createElement('span');
+                    if (f.spanClass) labelSpan.className = f.spanClass;
+                    labelSpan.textContent = f.label;
+                    btn.appendChild(labelSpan);
+                    btn.title = 'Filter by ' + f.type;
+                    btn.addEventListener('click', () => {
+                        if (activeFilter === f.type) {
+                            activeFilter = null;
+                            btn.className = 'filter-btn';
+                        } else {
+                            filterContainer.querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn');
+                            activeFilter = f.type;
+                            btn.className = 'filter-btn ' + f.activeClass;
+                        }
+                        applyFilter(doc, activeFilter);
+                    });
+                    filterContainer.appendChild(btn);
+                });
+
+                buttonRow.insertBefore(filterContainer, buttonRow.firstChild);
+            }
 
             const headerRow = doc.querySelector('thead tr');
             if (headerRow) {
                 const th = doc.createElement('th');
                 th.className = 'vote-header';
-                th.innerHTML = '★ / ⬇';
+                th.innerHTML = '★/◉/⬇';
                 headerRow.insertBefore(th, headerRow.firstChild);
             }
 
@@ -765,6 +817,7 @@
                     return;
                 }
 
+                row.setAttribute('data-opp-id', oppId);
                 const username = localStorage.getItem('starUsername');
 
                 // Star group
@@ -794,10 +847,42 @@
                 starGroup.appendChild(starBtn);
                 starGroup.appendChild(starCount);
 
-                // Separator
-                const sep = doc.createElement('span');
-                sep.className = 'vote-sep';
-                sep.textContent = '/';
+                // Separator 1
+                const sep1 = doc.createElement('span');
+                sep1.className = 'vote-sep';
+                sep1.textContent = ' ';
+
+                // Meh group
+                const mehUsers = (votesCache.mehs || {})[oppId] || [];
+                const isMehed = username && mehUsers.includes(username);
+                const mehHasBill = mehUsers.some(u => u.toLowerCase().includes('bill'));
+                const hasMehs = mehUsers.length > 0;
+
+                const mehGroup = doc.createElement('span');
+                mehGroup.className = 'vote-group';
+
+                const mehBtn = doc.createElement('button');
+                mehBtn.className = 'vote-btn meh-hover' + (hasMehs ? ' has-votes' : '') + (mehHasBill ? ' bill-meh' : '');
+                mehBtn.textContent = hasMehs ? '◉' : '◎';
+                mehBtn.title = hasMehs ? mehUsers.join(', ') : 'Click to mark as reviewed';
+
+                const mehCount = doc.createElement('span');
+                mehCount.className = 'vote-count count-meh' + (mehHasBill ? ' bill-meh' : '') + (isMehed ? ' my-vote' : '');
+                mehCount.textContent = hasMehs ? mehUsers.length : '';
+
+                mehBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleVote(oppId, 'meh', mehBtn, mehCount);
+                });
+
+                mehGroup.appendChild(mehBtn);
+                mehGroup.appendChild(mehCount);
+
+                // Separator 2
+                const sep2 = doc.createElement('span');
+                sep2.className = 'vote-sep';
+                sep2.textContent = ' ';
 
                 // Downvote group
                 const downUsers = votesCache.downvotes[oppId] || [];
@@ -827,9 +912,29 @@
                 downGroup.appendChild(downCount);
 
                 td.appendChild(starGroup);
-                td.appendChild(sep);
+                td.appendChild(sep1);
+                td.appendChild(mehGroup);
+                td.appendChild(sep2);
                 td.appendChild(downGroup);
                 row.insertBefore(td, row.firstChild);
+            });
+        }
+
+        function applyFilter(doc, filterType) {
+            const rows = doc.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                if (row.classList.contains('week-divider')) return;
+                const oppId = row.getAttribute('data-opp-id');
+                if (!oppId) return;
+
+                if (!filterType) {
+                    row.style.display = '';
+                    return;
+                }
+
+                const cacheKey = filterType === 'star' ? 'stars' : filterType === 'down' ? 'downvotes' : 'mehs';
+                const users = (votesCache[cacheKey] || {})[oppId] || [];
+                row.style.display = users.length > 0 ? '' : 'none';
             });
         }
 
@@ -887,7 +992,8 @@
                 localStorage.setItem('starPassphrase', passphrase);
             }
 
-            const endpoint = type === 'star' ? '/star' : '/downvote';
+            const endpointMap = { star: '/star', meh: '/meh', downvote: '/downvote' };
+            const endpoint = endpointMap[type];
 
             try {
                 const resp = await fetch(WORKER_URL + endpoint, {
@@ -908,8 +1014,8 @@
                 const data = await resp.json();
                 votesCache = data;
 
-                const cacheKey = type === 'star' ? 'stars' : 'downvotes';
-                const users = votesCache[cacheKey][oppId] || [];
+                const cacheKeyMap = { star: 'stars', meh: 'mehs', downvote: 'downvotes' };
+                const users = votesCache[cacheKeyMap[type]][oppId] || [];
                 const isVoted = users.includes(localStorage.getItem('starUsername'));
                 const hasBill = users.some(u => u.toLowerCase().includes('bill'));
                 const hasVotes = users.length > 0;
@@ -919,6 +1025,11 @@
                     btn.textContent = hasVotes ? '★' : '☆';
                     btn.title = hasVotes ? users.join(', ') : 'Click to star';
                     countEl.className = 'vote-count count-star' + (hasBill ? ' bill-star' : '') + (isVoted ? ' my-vote' : '');
+                } else if (type === 'meh') {
+                    btn.className = 'vote-btn meh-hover' + (hasVotes ? ' has-votes' : '') + (hasBill ? ' bill-meh' : '');
+                    btn.textContent = hasVotes ? '◉' : '◎';
+                    btn.title = hasVotes ? users.join(', ') : 'Click to mark as reviewed';
+                    countEl.className = 'vote-count count-meh' + (hasBill ? ' bill-meh' : '') + (isVoted ? ' my-vote' : '');
                 } else {
                     btn.className = 'vote-btn down-hover' + (hasVotes ? ' has-votes' : '') + (hasBill ? ' bill-down' : '');
                     btn.textContent = hasVotes ? '⬇' : '⇩';

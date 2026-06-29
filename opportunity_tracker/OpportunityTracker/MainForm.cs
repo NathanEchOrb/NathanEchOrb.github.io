@@ -6,48 +6,6 @@ namespace OpportunityTracker;
 
 public partial class MainForm : Form
 {
-    // ── Key paths (resolved relative to exe location, overridable via paths.json) ──
-    private static readonly string DownloadsDir =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
-
-    private static readonly string PagesRepoDir;
-    private static readonly string RawDocsDir;
-    private static readonly string EnrichedDocsDir;
-    private static readonly string PublishDocsDir;
-    private static readonly string TempDocDir;
-
-    static MainForm()
-    {
-        string exeDir = AppContext.BaseDirectory;
-        string settingsPath = Path.Combine(exeDir, "paths.json");
-
-        // Default: exe is in the pages repo root, Opportunity repo is a sibling
-        string defaultPagesRepo = exeDir.TrimEnd(Path.DirectorySeparatorChar);
-        string defaultOppRepo = Path.Combine(Directory.GetParent(defaultPagesRepo)?.FullName ?? exeDir, "Opportunity");
-
-        string pagesRepo = defaultPagesRepo;
-        string oppRepo = defaultOppRepo;
-
-        if (File.Exists(settingsPath))
-        {
-            try
-            {
-                var json = System.Text.Json.JsonDocument.Parse(File.ReadAllText(settingsPath));
-                var root = json.RootElement;
-                if (root.TryGetProperty("pages_repo", out var p) && p.GetString() is string pr)
-                    pagesRepo = pr;
-                if (root.TryGetProperty("opportunity_repo", out var o) && o.GetString() is string or2)
-                    oppRepo = or2;
-            }
-            catch { }
-        }
-
-        PagesRepoDir = pagesRepo;
-        RawDocsDir = Path.Combine(oppRepo, "raw docs");
-        EnrichedDocsDir = Path.Combine(oppRepo, "enriched docs");
-        PublishDocsDir = Path.Combine(pagesRepo, "docs");
-        TempDocDir = Path.Combine(pagesRepo, "temp_doc");
-    }
 
     // ── Filename pattern ───────────────────────────────────────────────────
     private static readonly Regex FilePattern = new(
@@ -311,7 +269,7 @@ public partial class MainForm : Form
     {
         _lstFiles.Items.Clear();
 
-        if (!Directory.Exists(DownloadsDir))
+        if (!Directory.Exists(PathConfig.DownloadsDir))
         {
             _lblFileCount.Text = "Downloads folder not found";
             return;
@@ -319,7 +277,7 @@ public partial class MainForm : Form
 
         var cutoff = DateTime.Today.AddDays(-14);
 
-        var files = Directory.GetFiles(DownloadsDir, "*.html")
+        var files = Directory.GetFiles(PathConfig.DownloadsDir, "*.html")
             .Select(f => new FileInfo(f))
             .Where(fi => FilePattern.IsMatch(fi.Name) && fi.LastWriteTime >= cutoff)
             .OrderByDescending(fi => fi.LastWriteTime)
@@ -344,12 +302,12 @@ public partial class MainForm : Form
         string baseName = Path.GetFileNameWithoutExtension(fileName);
 
         // Check raw docs
-        string rawPath = Path.Combine(RawDocsDir, fileName);
+        string rawPath = Path.Combine(PathConfig.RawDocsDir, fileName);
         if (File.Exists(rawPath)) return true;
 
         // Check enriched docs
         string enrichedName = baseName + "_enriched.html";
-        string enrichedPath = Path.Combine(EnrichedDocsDir, enrichedName);
+        string enrichedPath = Path.Combine(PathConfig.EnrichedDocsDir, enrichedName);
         if (File.Exists(enrichedPath)) return true;
 
         return false;
@@ -406,7 +364,7 @@ public partial class MainForm : Form
 
         string display = _lstFiles.SelectedItem.ToString()!;
         string fileName = display.Split("  (")[0];
-        string fullPath = Path.Combine(DownloadsDir, fileName);
+        string fullPath = Path.Combine(PathConfig.DownloadsDir, fileName);
 
         if (!File.Exists(fullPath))
         {
@@ -455,7 +413,7 @@ public partial class MainForm : Form
 
         string display = _lstFiles.SelectedItem.ToString()!;
         string fileName = display.Split("  (")[0];
-        string sourcePath = Path.Combine(DownloadsDir, fileName);
+        string sourcePath = Path.Combine(PathConfig.DownloadsDir, fileName);
 
         if (!File.Exists(sourcePath))
         {
@@ -490,254 +448,7 @@ public partial class MainForm : Form
     private void RunPipeline(string sourcePath, string fileName, string mode,
                              int fiscalYear, bool forceReprocess)
     {
-        Log($"=== Pipeline started (mode: {mode}) ===");
-        Log($"Source: {fileName}");
-        Log($"Fiscal year: {fiscalYear}");
-
-        // ── Step 1: Copy to raw docs ──────────────────────────────────────
-        Log("Copying to raw docs...");
-        Directory.CreateDirectory(RawDocsDir);
-        string rawDestPath = Path.Combine(RawDocsDir, fileName);
-
-        if (File.Exists(rawDestPath) && !forceReprocess)
-        {
-            Log("File already exists in raw docs (use Force reprocess to overwrite).");
-        }
-        else
-        {
-            File.Copy(sourcePath, rawDestPath, overwrite: true);
-            Log($"Copied to: {rawDestPath}");
-        }
-
-        // ── Step 2: Enrichment pipeline ───────────────────────────────────
-        string baseName = Path.GetFileNameWithoutExtension(fileName);
-        string enrichedFileName = baseName + "_enriched.html";
-        string enrichedPath = Path.Combine(EnrichedDocsDir, enrichedFileName);
-
-        if (File.Exists(enrichedPath) && !forceReprocess)
-        {
-            Log("Enriched file already exists (use Force reprocess to overwrite). Skipping enrichment.");
-        }
-        else
-        {
-            Log("Parsing HTML...");
-            List<Opportunity> opportunities;
-            try
-            {
-                opportunities = HtmlIngestor.ParseHtmlFile(rawDestPath);
-            }
-            catch (Exception ex)
-            {
-                Log($"Error parsing HTML: {ex.Message}");
-                return;
-            }
-            Log($"Parsed {opportunities.Count} opportunities.");
-
-            Log("Initializing OrganizationResolver and BudgetFetcher...");
-            OrganizationResolver resolver;
-            try
-            {
-                resolver = new OrganizationResolver(fiscalYear, fetchLiveBudgets: true);
-                Log("OrganizationResolver initialized.");
-            }
-            catch (Exception ex)
-            {
-                Log($"Warning: OrganizationResolver init error: {ex.Message}");
-                resolver = new OrganizationResolver(fiscalYear, fetchLiveBudgets: false);
-            }
-
-            Log("Enriching opportunities...");
-            int enrichedCount = 0;
-            foreach (var opp in opportunities)
-            {
-                try
-                {
-                    resolver.EnrichOpportunity(opp);
-                    PocExtractor.EnrichOpportunity(opp);
-                    enrichedCount++;
-                }
-                catch (Exception ex)
-                {
-                    Log($"Warning: Enrichment error for '{opp.Title}': {ex.Message}");
-                }
-            }
-            Log($"Enriched {enrichedCount}/{opportunities.Count} opportunities.");
-
-            Log("Generating enriched HTML...");
-            Directory.CreateDirectory(EnrichedDocsDir);
-            try
-            {
-                OutputGenerator.GenerateEnrichedHtml(opportunities, enrichedPath);
-                Log($"Enriched file saved: {enrichedPath}");
-            }
-            catch (Exception ex)
-            {
-                Log($"Error generating output: {ex.Message}");
-                return;
-            }
-        }
-
-        if (mode == "preview")
-        {
-            Log("Preview mode - opening enriched file and stopping.");
-            try
-            {
-                Process.Start(new ProcessStartInfo(enrichedPath) { UseShellExecute = true });
-            }
-            catch (Exception ex)
-            {
-                Log($"Could not open file: {ex.Message}");
-            }
-            Log("=== Pipeline complete (preview only) ===");
-            return;
-        }
-
-        // ── Step 3: Sync enriched files to publish docs ───────────────────
-        Log("Syncing enriched files to publish docs...");
-        Directory.CreateDirectory(PublishDocsDir);
-        Directory.CreateDirectory(TempDocDir);
-
-        int copiedCount = 0;
-        int skippedCount = 0;
-
-        if (Directory.Exists(EnrichedDocsDir))
-        {
-            foreach (var srcFile in Directory.GetFiles(EnrichedDocsDir, "*.html"))
-            {
-                string srcName = Path.GetFileName(srcFile);
-                string destPath = Path.Combine(PublishDocsDir, srcName);
-                string tempPath = Path.Combine(TempDocDir, srcName);
-
-                if (File.Exists(destPath) || File.Exists(tempPath))
-                {
-                    if (!forceReprocess)
-                    {
-                        skippedCount++;
-                        continue;
-                    }
-                }
-
-                File.Copy(srcFile, destPath, overwrite: true);
-                copiedCount++;
-            }
-        }
-
-        Log($"Synced {copiedCount} file(s), skipped {skippedCount} already-published file(s).");
-
-        // ── Step 3b: Run PartialReportManager on newly copied files ───────
-        Log("Processing partial reports...");
-        var partialManager = new PartialReportManager();
-        foreach (var docFile in Directory.GetFiles(PublishDocsDir, "*_enriched.html"))
-        {
-            try
-            {
-                partialManager.ProcessNewReport(PublishDocsDir, TempDocDir, docFile);
-            }
-            catch (Exception ex)
-            {
-                Log($"Warning: Partial report processing error for {Path.GetFileName(docFile)}: {ex.Message}");
-            }
-        }
-        Log("Partial report processing complete.");
-
-        // ── Step 4: Git commit (and optional push) ────────────────────────
-        Log("Running git operations...");
-
-        RunGit("add docs/");
-
-        string diffOutput = RunGit("diff --cached --name-only");
-        if (string.IsNullOrWhiteSpace(diffOutput))
-        {
-            Log("No changes to commit.");
-        }
-        else
-        {
-            Log($"Changed files:\n{diffOutput}");
-
-            string commitMessage = BuildCommitMessage();
-            Log($"Commit message: {commitMessage}");
-
-            string commitResult = RunGit($"commit -m \"{commitMessage}\"");
-            Log(commitResult);
-
-            if (mode == "push")
-            {
-                Log("Pulling latest changes...");
-                string pullResult = RunGit("pull --rebase", timeoutSeconds: 60);
-                Log(pullResult);
-
-                Log("Pushing to remote...");
-                string pushResult = RunGit("push", timeoutSeconds: 60);
-                Log(pushResult);
-            }
-            else
-            {
-                Log("Skipping push (mode: nopush).");
-            }
-        }
-
-        Log($"=== Pipeline complete (mode: {mode}) ===");
-    }
-
-    // ====================================================================
-    //  Git helpers
-    // ====================================================================
-
-    private string RunGit(string arguments, int timeoutSeconds = 30)
-    {
-        try
-        {
-            var psi = new ProcessStartInfo
-            {
-                FileName = "git",
-                Arguments = arguments,
-                WorkingDirectory = PagesRepoDir,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-            };
-            psi.Environment["GIT_TERMINAL_PROMPT"] = "0";
-
-            using var process = Process.Start(psi);
-            if (process == null)
-                return "Failed to start git process.";
-
-            bool exited = process.WaitForExit(timeoutSeconds * 1000);
-            if (!exited)
-            {
-                process.Kill();
-                return $"Git timed out after {timeoutSeconds}s (may need credentials — run 'git push' manually in a terminal first to cache them).";
-            }
-
-            string stdout = process.StandardOutput.ReadToEnd();
-            string stderr = process.StandardError.ReadToEnd();
-
-            string result = stdout;
-            if (!string.IsNullOrWhiteSpace(stderr))
-                result += (string.IsNullOrEmpty(result) ? "" : "\n") + stderr;
-
-            return result.Trim();
-        }
-        catch (Exception ex)
-        {
-            return $"Git error: {ex.Message}";
-        }
-    }
-
-    private static string BuildCommitMessage()
-    {
-        var today = DateTime.Today;
-        string dateStr = $"{today.Month}-{today.Day}-{today.Year % 100}";
-
-        if (today.DayOfWeek == DayOfWeek.Monday)
-        {
-            return $"Weekly report added for {dateStr}";
-        }
-        else
-        {
-            string dayName = today.DayOfWeek.ToString();
-            return $"Report update for {dayName} {dateStr}";
-        }
+        var runner = new PipelineRunner(Log);
+        runner.Run(sourcePath, fileName, mode, fiscalYear, forceReprocess);
     }
 }

@@ -1,3 +1,4 @@
 temp_doc/*
 *.exe
+*.pdb
 __pycache__/

@@ -13,30 +13,20 @@ export default {
     const url = new URL(request.url);
     const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
 
-    if (url.pathname === '/votes' && request.method === 'GET') {
-      const [stars, downvotes] = await Promise.all([
+    if ((url.pathname === '/votes' || url.pathname === '/stars') && request.method === 'GET') {
+      const [stars, downvotes, mehs] = await Promise.all([
         env.STARS.get('stars', 'json'),
         env.STARS.get('downvotes', 'json'),
+        env.STARS.get('mehs', 'json'),
       ]);
       return new Response(JSON.stringify({
         stars: stars || {},
         downvotes: downvotes || {},
+        mehs: mehs || {},
       }), { headers: jsonHeaders });
     }
 
-    // Legacy endpoint — still works
-    if (url.pathname === '/stars' && request.method === 'GET') {
-      const [stars, downvotes] = await Promise.all([
-        env.STARS.get('stars', 'json'),
-        env.STARS.get('downvotes', 'json'),
-      ]);
-      return new Response(JSON.stringify({
-        stars: stars || {},
-        downvotes: downvotes || {},
-      }), { headers: jsonHeaders });
-    }
-
-    if ((url.pathname === '/star' || url.pathname === '/downvote') && request.method === 'POST') {
+    if ((url.pathname === '/star' || url.pathname === '/downvote' || url.pathname === '/meh') && request.method === 'POST') {
       let body;
       try {
         body = await request.json();
@@ -60,7 +50,8 @@ export default {
         });
       }
 
-      const kvKey = url.pathname === '/star' ? 'stars' : 'downvotes';
+      const kvKeyMap = { '/star': 'stars', '/downvote': 'downvotes', '/meh': 'mehs' };
+      const kvKey = kvKeyMap[url.pathname];
       const data = await env.STARS.get(kvKey, 'json') || {};
       const users = data[oppId] || [];
 
@@ -79,14 +70,17 @@ export default {
 
       await env.STARS.put(kvKey, JSON.stringify(data));
 
-      const [stars, downvotes] = await Promise.all([
-        kvKey === 'stars' ? data : (await env.STARS.get('stars', 'json') || {}),
-        kvKey === 'downvotes' ? data : (await env.STARS.get('downvotes', 'json') || {}),
-      ]);
+      const allKeys = ['stars', 'downvotes', 'mehs'];
+      const results = {};
+      for (const k of allKeys) {
+        if (k === kvKey) {
+          results[k] = data;
+        } else {
+          results[k] = await env.STARS.get(k, 'json') || {};
+        }
+      }
 
-      return new Response(JSON.stringify({ stars, downvotes }), {
-        headers: jsonHeaders,
-      });
+      return new Response(JSON.stringify(results), { headers: jsonHeaders });
     }
 
     return new Response('Not found', { status: 404, headers: corsHeaders });
