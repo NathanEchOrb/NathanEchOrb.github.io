@@ -1,0 +1,823 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{background-color:#1e1e1e;color:#e0e0e0;font-family:Arial,sans-serif;margin:20px;}
+h2{color:#4CAF50;margin-bottom:15px;font-size:20px;}
+table{border-collapse:collapse;width:100%;font-size:13px;}
+th,td{border:1px solid #444;padding:4px 8px;text-align:left;}
+th{background-color:#2d2d2d;color:#4CAF50;font-weight:bold;}
+tr:nth-child(even){background-color:#252525;}
+tr:nth-child(odd){background-color:#2a2a2a;}
+tr:hover{background-color:#333;}
+a{color:#64b5f6;text-decoration:none;}
+a:hover{text-decoration:underline;color:#90caf9;}
+.enriched-col{background-color:#1a2a1a;}
+th.enriched-col{background-color:#2d3d2d;color:#81C784;}
+.collapsible{display:none;}
+.expanded .collapsible{display:table-cell;}
+.toggle-btn{
+  background-color:#4CAF50;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  cursor:pointer;
+  font-size:12px;
+  border-radius:4px;
+  margin-bottom:10px;
+}
+.toggle-btn:hover{background-color:#45a049;}
+.button-row{margin-bottom:10px;}
+.week-divider td{background-color:#1a1a2e;border:1px solid #555;color:#7b8cde;font-weight:bold;font-size:14px;padding:8px 12px;text-align:center;letter-spacing:0.5px;}
+</style>
+</head>
+<body>
+<h2>Enriched Opportunity Data</h2>
+<div class="button-row">
+<button class="toggle-btn" id="toggleBtn" onclick="toggleDetails()">Expand Details</button>
+</div>
+<table id="dataTable">
+<thead>
+<tr>
+<th>Opportunity (Linked)</th>
+<th>Organization</th>
+<th class="enriched-col collapsible">Parent Agency</th>
+<th class="enriched-col">Funding Profile</th>
+<th class="enriched-col collapsible">Matched Programs</th>
+<th class="enriched-col collapsible">Mission</th>
+<th class="enriched-col collapsible">Focus Areas</th>
+<th class="enriched-col collapsible">NDAA References</th>
+<th class="enriched-col collapsible">Technical POC</th>
+<th class="enriched-col collapsible">POC Email</th>
+<th class="enriched-col collapsible">POC Phone</th>
+<th class="enriched-col collapsible">POC Title</th>
+<th class="enriched-col collapsible">Org Website</th>
+<th>Notice Type</th>
+<th>Updated Date</th>
+<th>Response Deadline</th>
+<th>Office</th>
+</tr>
+</thead>
+<tbody>
+<tr class="week-divider"><td colspan="17">Week of Aug 24, 2026 — Aug 30, 2026</td></tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/f6f7f2ddc8b6470bae97b0af79a0b8c5/view" target="_blank">ELI GROUP (MTM) / 2027 POWER Forum</a></td>
+<td>RV</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Original Special Notice</td>
+<td>Aug 24, 2026</td>
+<td>August 27, 2026 at 01:00 PM MST</td>
+<td>NASA SHARED SERVICES CENTER</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/bfd338063c6049f4968d8286ccbf60d7/view" target="_blank">Principal Multi-Domain Command & Control (MDC2) Subject Matter Expert</a></td>
+<td></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Original Sources Sought</td>
+<td>Aug 24, 2026</td>
+<td>September 07, 2026 at 12:00 PM MST</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/a96dc33b4bb6444e9a8c34f65cadbb94/view" target="_blank">Missile Defense Agency - Nimble Options for Buying Layered Effects (NOBLE) Announcement</a></td>
+<td>Missile Defense Agency (MDA)</td>
+<td class="enriched-col collapsible">Department of Defense</td>
+<td class="enriched-col">RDT&E: $10,532M, Procurement: $1,607M, O&M: $720M (FY2026 Total: $12,859M)</td>
+<td class="enriched-col collapsible">• Ballistic Missile Defense Command and Control, Battle Management and Communications (C2BMC) (91) - $1,067.2M RDTE
+• Ballistic Missile Defense Midcourse Defense Segment (85) - $825.9M RDTE
+• Ballistic Missile Defense Targets (98) - $693.9M RDTE</td>
+<td class="enriched-col collapsible">The Missile Defense Agency develops and deploys a layered Missile Defense System to defend the United States, its deployed forces, allies, and friends from missile attacks.</td>
+<td class="enriched-col collapsible">Ballistic missile defense, Hypersonic defense, Space-based sensors, Tracking and discrimination</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1681 - Missile defense requirements; FY2024 NDAA Sec. 1682 - Space-based missile tracking</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.mda.mil</td>
+<td>Updated  Combined Synopsis/Solicitation</td>
+<td>Aug 24, 2026</td>
+<td></td>
+<td>MISSILE DEFENSE AGENCY (MDA)</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/6f39778d540c47a4a485cb649e541749/view" target="_blank">Occupational Health Medical Director and EAP at John C. Stennis Space Center (SSC)</a></td>
+<td>Space Systems Command (SSC)</td>
+<td class="enriched-col collapsible">United States Space Force</td>
+<td class="enriched-col">RDT&E: $120M (FY2026 Total: $120M)</td>
+<td class="enriched-col collapsible">• SSC Enterprise Engineering & Integration (46) - $110.6M RDTE
+• Ship to Shore Connector (SSC) (167) - $9.0M RDTE</td>
+<td class="enriched-col collapsible">SSC is responsible for developing, acquiring, equipping, fielding, and sustaining lethal and resilient space capabilities.</td>
+<td class="enriched-col collapsible">GPS, Satellite communications, Launch services, Space domain awareness</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1631 - Space acquisition reform</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.ssc.spaceforce.mil</td>
+<td>Updated  Combined Synopsis/Solicitation</td>
+<td>Aug 24, 2026</td>
+<td></td>
+<td>NASA SHARED SERVICES CENTER</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/24ac61512594447d88d05635d744b739/view" target="_blank">PEO-FW Group 2 Air-Launched Effects (A2E) Assessment Event (AE)</a></td>
+<td></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Original Special Notice</td>
+<td>Aug 24, 2026</td>
+<td>September 11, 2026 at 08:59 PM MST</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/6832b4dfe3f446408d04cc76aea34785/view" target="_blank">Department of the Navy Rapid Capabilities Office Disruptor Day: Electro-Optical and Infrared (EO/IR) Solutions</a></td>
+<td>Rapid Capabilities Office (RCO)</td>
+<td class="enriched-col collapsible">Department of the Air Force</td>
+<td class="enriched-col">Air Force RDT&E, Rapid Prototyping Funds (FY24: $800M)</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">RCO expedites development and fielding of select Air Force combat support and weapon systems through rapid acquisition.</td>
+<td class="enriched-col collapsible">Rapid prototyping, Advanced weapons, Classified programs</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.rco.af.mil</td>
+<td>Updated  Special Notice</td>
+<td>Aug 24, 2026</td>
+<td>August 14, 2026 at 01:00 PM MST</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/fc13efb3326e43cc8e8b502052a395e0/view" target="_blank">RFI - Concepts for Design, Construction, and Operation of a Regional Liquefied Natural Gas (LNG) Production and Storage Facility at Kennedy Space Center or Cape Canaveral Space Force Station</a></td>
+<td>United States Space Force (USSF)</td>
+<td class="enriched-col collapsible">Department of the Air Force</td>
+<td class="enriched-col">RDT&E: $29,034M, Procurement: $3,723M, O&M: $5,910M (FY2026 Total: $38,668M)</td>
+<td class="enriched-col collapsible">• Operation and Maintenance, Space Force (080) - $1,495.2M OM
+• Procurement, Space Force (22) - $1,473.0M PROCUREMENT
+• Operation and Maintenance, Space Force (030) - $983.8M OM</td>
+<td class="enriched-col collapsible">The United States Space Force is responsible for organizing, training, and equipping Guardians to conduct global space operations that enhance the way joint and coalition forces fight.</td>
+<td class="enriched-col collapsible">Space domain awareness, Satellite operations, Space control, Missile warning</td>
+<td class="enriched-col collapsible">FY2024 NDAA Title XVI - Space Force provisions</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.spaceforce.mil</td>
+<td>Updated  Special Notice</td>
+<td>Aug 24, 2026</td>
+<td>September 21, 2026 at 02:00 PM MST</td>
+<td>NASA KENNEDY SPACE CENTER</td>
+</tr>
+<tr class="week-divider"><td colspan="17">Week of Aug 17, 2026 — Aug 23, 2026</td></tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/35f84426536a4c4cbad04eff7b208f37/view" target="_blank">**PRE-SOLICITATION NOTICE UPDATE**   Satellite Communication Augmentation Resource (SCAR): Increment 1</a></td>
+<td>Rapid Capabilities Office (RCO)</td>
+<td class="enriched-col collapsible">Department of the Air Force</td>
+<td class="enriched-col">Air Force RDT&E, Rapid Prototyping Funds (FY24: $800M)</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">RCO expedites development and fielding of select Air Force combat support and weapon systems through rapid acquisition.</td>
+<td class="enriched-col collapsible">Rapid prototyping, Advanced weapons, Classified programs</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.rco.af.mil</td>
+<td>Updated  Sources Sought</td>
+<td>Aug 23, 2026</td>
+<td>July 26, 2026 at 04:00 PM MST</td>
+<td>FA2548 SPC RPD CPBLTS OFFC SPC RCO</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/67732992238d4751b687b76693ab4017/view" target="_blank">711th HPW Mission Support Services MAC IDIQ</a></td>
+<td>Air Force Research Laboratory (AFRL)</td>
+<td class="enriched-col collapsible">Department of the Air Force</td>
+<td class="enriched-col">RDT&E: $58,895M, Procurement: $43,125M, O&M: $80,649M (FY2026 Total: $182,669M)</td>
+<td class="enriched-col collapsible">• Mission Planning Systems (211) - $138.7M RDTE
+• Strategic Mission Planning & Execution System (SMPES) (238) - $75.2M RDTE
+• Mission Partner Environments (77) - $15.0M RDTE</td>
+<td class="enriched-col collapsible">AFRL leads the discovery, development, and integration of affordable warfighting technologies for America's air, space, and cyberspace forces.</td>
+<td class="enriched-col collapsible">Directed energy, Autonomous systems, Space vehicles, Materials and manufacturing</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 211 - Air Force S&T programs</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.afrl.af.mil</td>
+<td>Original Combined Synopsis/Solicitation</td>
+<td>Aug 21, 2026</td>
+<td></td>
+<td>FA2396 USAF AFMC AFRL PZL AFRL PZLE</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/395482c0c6f546b1841d46322641d936/view" target="_blank">Kronos Family of Systems Commercial Solutions Opening</a></td>
+<td>Space Systems Command (SSC)</td>
+<td class="enriched-col collapsible">United States Space Force</td>
+<td class="enriched-col">RDT&E: $120M (FY2026 Total: $120M)</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">SSC is responsible for developing, acquiring, equipping, fielding, and sustaining lethal and resilient space capabilities.</td>
+<td class="enriched-col collapsible">GPS, Satellite communications, Launch services, Space domain awareness</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1631 - Space acquisition reform</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.ssc.spaceforce.mil</td>
+<td>Updated  Special Notice</td>
+<td>Aug 21, 2026</td>
+<td>August 26, 2026 at 05:00 PM MST</td>
+<td>FA8806 BATTLE MNGMNT C3 SSC/BCK</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/dc6d288059c4490fbd08052970dd6991/view" target="_blank">Kronos Family of Systems Commercial Solutions Opening</a></td>
+<td>Space Systems Command (SSC)</td>
+<td class="enriched-col collapsible">United States Space Force</td>
+<td class="enriched-col">RDT&E: $120M (FY2026 Total: $120M)</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">SSC is responsible for developing, acquiring, equipping, fielding, and sustaining lethal and resilient space capabilities.</td>
+<td class="enriched-col collapsible">GPS, Satellite communications, Launch services, Space domain awareness</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1631 - Space acquisition reform</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.ssc.spaceforce.mil</td>
+<td>Updated  Solicitation</td>
+<td>Aug 21, 2026</td>
+<td></td>
+<td>FA8806 BATTLE MNGMNT C3 SSC/BCK</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/0468b5c3c10f43d7b71c121d64085f13/view" target="_blank">Communications, Network, Engineering, Cybersecurity, and Information Technology Services (CNECTS), aka "Connects"</a></td>
+<td>United States Space Force (USSF)</td>
+<td class="enriched-col collapsible">Department of the Air Force</td>
+<td class="enriched-col">RDT&E: $29,034M, Procurement: $3,723M, O&M: $5,910M (FY2026 Total: $38,668M)</td>
+<td class="enriched-col collapsible">• Narrowband Satellite Communications (54) - $421.8M RDTE
+• Satellite Control Network (SPACE) (55) - $93.8M RDTE</td>
+<td class="enriched-col collapsible">The United States Space Force is responsible for organizing, training, and equipping Guardians to conduct global space operations that enhance the way joint and coalition forces fight.</td>
+<td class="enriched-col collapsible">Space domain awareness, Satellite operations, Space control, Missile warning</td>
+<td class="enriched-col collapsible">FY2024 NDAA Title XVI - Space Force provisions</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.spaceforce.mil</td>
+<td>Updated  Special Notice</td>
+<td>Aug 21, 2026</td>
+<td>December 23, 2026 at 02:00 PM MST</td>
+<td>FA2518  USSF SPOC/SAIO</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/b7b74d18a8834812b523f0300c27d83a/view" target="_blank">Amendment 0001 USAF_USSF BMT Metal Name Tags</a></td>
+<td>FA3016  502 CONS CL</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Updated  Combined Synopsis/Solicitation</td>
+<td>Aug 21, 2026</td>
+<td></td>
+<td>FA3016  502 CONS CL</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/0cd637419e794be7bee14a0867762722/view" target="_blank">SYSTEM DELTA 84 (SYD 84/MT) MEDIUM EARTH ORBIT MISSILE WARNING / MISSILE TRACKING   EPOCH 3 and EPOCH 4, REQUEST FOR INFORMATION (RFI)</a></td>
+<td>Space Systems Command (SSC)</td>
+<td class="enriched-col collapsible">United States Space Force</td>
+<td class="enriched-col">RDT&E: $120M (FY2026 Total: $120M)</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">SSC is responsible for developing, acquiring, equipping, fielding, and sustaining lethal and resilient space capabilities.</td>
+<td class="enriched-col collapsible">GPS, Satellite communications, Launch services, Space domain awareness</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1631 - Space acquisition reform</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.ssc.spaceforce.mil</td>
+<td>Updated  Sources Sought</td>
+<td>Aug 21, 2026</td>
+<td>October 31, 2026 at 04:00 PM MST</td>
+<td>FA8810  SPACE SENSING SSC/SNK</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/3342a85dbf2d4665a8a901492d3f902d/view" target="_blank">Capability Trunk Cable</a></td>
+<td>RV</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Original Special Notice</td>
+<td>Aug 21, 2026</td>
+<td>August 25, 2026 at 10:00 AM MST</td>
+<td>NASA SHARED SERVICES CENTER</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/cc8eb1013b324ecab47c274c97fc6b78/view" target="_blank">NASA Fire Services Contract (NFSC) II</a></td>
+<td>NASA</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Updated  Sources Sought</td>
+<td>Aug 20, 2026</td>
+<td>June 23, 2026 at 02:00 PM MST</td>
+<td>NASA KENNEDY SPACE CENTER</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/85d403340f50436fafb848317b61a96f/view" target="_blank">Solicitation - Fire Department Vehicle Exhaust Inspection, Maintenance and Repair at Edwards, AFB</a></td>
+<td>AF</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Updated  Combined Synopsis/Solicitation</td>
+<td>Aug 20, 2026</td>
+<td></td>
+<td>FA9301  AFTC PZIO</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/68c3032631b24bc5b53ce1ebf06a87a0/view" target="_blank">HADES (Hybrid Architecture and Development for Experimental Systems) Request for Proposal</a></td>
+<td>Space Development Agency (SDA)</td>
+<td class="enriched-col collapsible">Department of Defense / Space Force</td>
+<td class="enriched-col">SDA RDT&E, Proliferated Warfighter Space Architecture (PWSA) (FY24: $4,500M)</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">SDA delivers space-based capabilities that preserve strategic technology advantages by outpacing adversary threats using a new approach to national security space acquisition.</td>
+<td class="enriched-col collapsible">Transport layer, Tracking layer, Proliferated LEO, Mesh networks</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1611 - SDA transfer to Space Force; FY2024 NDAA Sec. 1612 - Proliferated LEO architecture</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.sda.mil</td>
+<td>Updated  Solicitation</td>
+<td>Aug 20, 2026</td>
+<td></td>
+<td>FA8809 SDA AND CMBT PWR SSC/SZK-IK</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/5d3d935c1f024be2a178ffc8e3de33ec/view" target="_blank">J063--MVAHCS Fire Alarm Maintenance  Sources Sought</a></td>
+<td>NETWORK CONTRACT OFFICE 23 (36C263)</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Original Sources Sought</td>
+<td>Aug 20, 2026</td>
+<td>August 26, 2026 at 03:00 PM MST</td>
+<td>NETWORK CONTRACT OFFICE 23 (36C263)</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/c9cd73f1691547b7ab1d266321f1b51c/view" target="_blank">Request for Information - IT Administration Contract for AFRL</a></td>
+<td>Air Force Research Laboratory (AFRL)</td>
+<td class="enriched-col collapsible">Department of the Air Force</td>
+<td class="enriched-col">RDT&E: $58,895M, Procurement: $43,125M, O&M: $80,649M (FY2026 Total: $182,669M)</td>
+<td class="enriched-col collapsible">• Dominant Information Sciences and Methods (15) - $187.0M RDTE
+• ENTEPRISE INFORMATION SERVICES (EIS) (144) - $101.8M RDTE
+• Information Systems Security Program (235) - $98.4M RDTE</td>
+<td class="enriched-col collapsible">AFRL leads the discovery, development, and integration of affordable warfighting technologies for America's air, space, and cyberspace forces.</td>
+<td class="enriched-col collapsible">Directed energy, Autonomous systems, Space vehicles, Materials and manufacturing</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 211 - Air Force S&T programs</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.afrl.af.mil</td>
+<td>Updated  Sources Sought</td>
+<td>Aug 20, 2026</td>
+<td>September 05, 2025 at 12:30 PM MST</td>
+<td>FA8652 AFRL HQ AFRL/PK</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/aec128208fe94124b0d349c4049f6231/view" target="_blank">Low-Cost Kill Vehicles</a></td>
+<td>Missile Defense Agency (MDA)</td>
+<td class="enriched-col collapsible">Department of Defense</td>
+<td class="enriched-col">RDT&E: $10,532M, Procurement: $1,607M, O&M: $720M (FY2026 Total: $12,859M)</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">The Missile Defense Agency develops and deploys a layered Missile Defense System to defend the United States, its deployed forces, allies, and friends from missile attacks.</td>
+<td class="enriched-col collapsible">Ballistic missile defense, Hypersonic defense, Space-based sensors, Tracking and discrimination</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1681 - Missile defense requirements; FY2024 NDAA Sec. 1682 - Space-based missile tracking</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.mda.mil</td>
+<td>Original Special Notice</td>
+<td>Aug 19, 2026</td>
+<td>October 02, 2026 at 09:00 AM MST</td>
+<td>MISSILE DEFENSE AGENCY (MDA)</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/481113bb2aff442c8cf1ddda7852a3f7/view" target="_blank">Special Notice For Space Systems Command Strategic Services Vehicle (SSSV) Program</a></td>
+<td>Space Systems Command (SSC)</td>
+<td class="enriched-col collapsible">United States Space Force</td>
+<td class="enriched-col">RDT&E: $120M (FY2026 Total: $120M)</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">SSC is responsible for developing, acquiring, equipping, fielding, and sustaining lethal and resilient space capabilities.</td>
+<td class="enriched-col collapsible">GPS, Satellite communications, Launch services, Space domain awareness</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1631 - Space acquisition reform</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.ssc.spaceforce.mil</td>
+<td>Original Special Notice</td>
+<td>Aug 19, 2026</td>
+<td>October 19, 2026 at 05:00 PM MST</td>
+<td>FA8802 INTEGRATION OPERATION PIKPKE</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/7d46d4bb8b504bec857381f327522415/view" target="_blank">NGA - Boosting Innovative GEOINT - Science & Technology Broad Agency Announcement (BIG-ST BAA)</a></td>
+<td>National Geospatial-Intelligence Agency (NGA)</td>
+<td class="enriched-col collapsible">Department of Defense</td>
+<td class="enriched-col">RDT&E: $806M, Procurement: $27M (FY2026 Total: $832M)</td>
+<td class="enriched-col collapsible">• Ship Self Defense (Engage: Hard Kill) (154) - $345.0M RDTE
+• Ship Self Defense (Engage: Soft Kill/EW) (155) - $232.4M RDTE
+• Cooperative Engagement Capability (CEC) (211) - $136.4M RDTE</td>
+<td class="enriched-col collapsible">NGA delivers world-class geospatial intelligence (GEOINT) that provides a decisive advantage to policymakers, warfighters, intelligence professionals, and first responders.</td>
+<td class="enriched-col collapsible">Geospatial intelligence, Imagery analysis, GEOINT services, Foundation data</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1631 - GEOINT modernization</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.nga.mil</td>
+<td>Updated  Solicitation</td>
+<td>Aug 18, 2026</td>
+<td></td>
+<td>ATTN: MS S84 - OCS</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/3c58a16b4368476ca5b528dc9a90c808/view" target="_blank">Janitorial services Salt Lake City, UT (multiple locations)</a></td>
+<td>697DCK REGIONAL ACQUISITIONS SVCS</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Original Solicitation</td>
+<td>Aug 18, 2026</td>
+<td></td>
+<td>697DCK REGIONAL ACQUISITIONS SVCS</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/b093f8bfa55c4dbeafddf69d9b8a1403/view" target="_blank">Video Management System (VMS) Installation and Integration</a></td>
+<td>Air Force Research Laboratory (AFRL)</td>
+<td class="enriched-col collapsible">Department of the Air Force</td>
+<td class="enriched-col">RDT&E: $58,895M, Procurement: $43,125M, O&M: $80,649M (FY2026 Total: $182,669M)</td>
+<td class="enriched-col collapsible">• Advanced Battle Management System (ABMS) (37) - $1,040.5M RDTE
+• Joint Transportation Management System (JTMS) (57) - $129.6M RDTE
+• Operational Energy and Installation Resilience (60) - $49.5M RDTE</td>
+<td class="enriched-col collapsible">AFRL leads the discovery, development, and integration of affordable warfighting technologies for America's air, space, and cyberspace forces.</td>
+<td class="enriched-col collapsible">Directed energy, Autonomous systems, Space vehicles, Materials and manufacturing</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 211 - Air Force S&T programs</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.afrl.af.mil</td>
+<td>Updated  Combined Synopsis/Solicitation</td>
+<td>Aug 18, 2026</td>
+<td></td>
+<td>FA8751  AFRL RIKO</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/1cce3da03a5c45e08d39016e0872e54f/view" target="_blank">Spacecraft Processing and Operations Contract (SPOC) On-Ramp</a></td>
+<td>Space Operations Command (SpOC)</td>
+<td class="enriched-col collapsible">United States Space Force</td>
+<td class="enriched-col">Space Force O&M</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">SpOC is the primary force provider for combatant commanders, providing trained and ready operational space forces.</td>
+<td class="enriched-col collapsible">Satellite operations, Space domain awareness, Orbital warfare</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.spoc.spaceforce.mil</td>
+<td>Original Award Notice</td>
+<td>Aug 17, 2026</td>
+<td></td>
+<td>NASA KENNEDY SPACE CENTER</td>
+</tr>
+<tr class="week-divider"><td colspan="17">Week of Aug 10, 2026 — Aug 16, 2026</td></tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/cdb642fd15f645c3ac22204f3f9a16a7/view" target="_blank">REQUEST FOR INFORMATION (RFI)/ SOURCES SOUGHT Space Force Mission Delta 9 (MD9) – SL-5 EC2-S Ground System Sustainment</a></td>
+<td>United States Space Force (USSF)</td>
+<td class="enriched-col collapsible">Department of the Air Force</td>
+<td class="enriched-col">RDT&E: $29,034M, Procurement: $3,723M, O&M: $5,910M (FY2026 Total: $38,668M)</td>
+<td class="enriched-col collapsible">• Operation and Maintenance, Space Force (080) - $1,495.2M OM
+• Procurement, Space Force (22) - $1,473.0M PROCUREMENT
+• Operation and Maintenance, Space Force (030) - $983.8M OM</td>
+<td class="enriched-col collapsible">The United States Space Force is responsible for organizing, training, and equipping Guardians to conduct global space operations that enhance the way joint and coalition forces fight.</td>
+<td class="enriched-col collapsible">Space domain awareness, Satellite operations, Space control, Missile warning</td>
+<td class="enriched-col collapsible">FY2024 NDAA Title XVI - Space Force provisions</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.spaceforce.mil</td>
+<td>Updated  Sources Sought</td>
+<td>Aug 13, 2026</td>
+<td>September 11, 2026 at 10:00 AM MST</td>
+<td>FA2518  USSF SPOC/SAIO</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/36720cd4fd964bc1895484912df0a498/view" target="_blank">WFTCA – Moody Price Maximize E1 Capability HPLV RP Run Tank Hardware</a></td>
+<td>RV</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Original Special Notice</td>
+<td>Aug 13, 2026</td>
+<td>August 17, 2026 at 02:00 PM MST</td>
+<td>NASA SHARED SERVICES CENTER</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/b5e1a1a9f1b7421bafec168e7fe2c5bf/view" target="_blank">REQUEST FOR INFORMATION - OPERATIONAL TEST AND TRAINING READINESS DIVISION - DevSecOps</a></td>
+<td>otti</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Original Sources Sought</td>
+<td>Aug 13, 2026</td>
+<td>September 04, 2026 at 11:00 AM MST</td>
+<td>FA2553 OPRN TEST & TRG INFR OTTI PK</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/f265492bf4d34008bee299a89d0162b2/view" target="_blank">RF Architectures Applying Photonic Timing and Routing (RAAPTR)</a></td>
+<td>DV</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Updated  Solicitation</td>
+<td>Aug 13, 2026</td>
+<td></td>
+<td>DEF ADVANCED RESEARCH PROJECTS AGCY</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/61c9d76077734399bbaf9ee34385af1f/view" target="_blank">FUSiON HD 8200 Scanner, Maxwell AFB, AL</a></td>
+<td>FA3300  42 CONS CC</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Updated  Special Notice</td>
+<td>Aug 12, 2026</td>
+<td>August 13, 2026 at 10:00 AM MST</td>
+<td>FA3300  42 CONS CC</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/0f5e19b94b9f4dd69f33447de3f5b750/view" target="_blank">Provide Open Frame Laboratory Furniture</a></td>
+<td>Air Force Research Laboratory (AFRL)</td>
+<td class="enriched-col collapsible">Department of the Air Force</td>
+<td class="enriched-col">RDT&E: $58,895M, Procurement: $43,125M, O&M: $80,649M (FY2026 Total: $182,669M)</td>
+<td class="enriched-col collapsible">• Open Architecture Management (100) - $44.1M RDTE</td>
+<td class="enriched-col collapsible">AFRL leads the discovery, development, and integration of affordable warfighting technologies for America's air, space, and cyberspace forces.</td>
+<td class="enriched-col collapsible">Directed energy, Autonomous systems, Space vehicles, Materials and manufacturing</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 211 - Air Force S&T programs</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.afrl.af.mil</td>
+<td>Updated  Combined Synopsis/Solicitation</td>
+<td>Aug 12, 2026</td>
+<td></td>
+<td>FA8751  AFRL RIKO</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/1a1f1c47df8d4f9fb2ea14e6740eaaca/view" target="_blank">Zero Trust Architecture (ZTA) Vendor Framework</a></td>
+<td>FA8802 INTEGRATION OPERATION PIKPKE</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Updated  Sources Sought</td>
+<td>Aug 11, 2026</td>
+<td>September 11, 2026 at 03:00 PM MST</td>
+<td>FA8802 INTEGRATION OPERATION PIKPKE</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/7601cb72ff5144858f6a024dbfc4fcec/view" target="_blank">TECHNOLOGY TRANSFER OPPORTUNITY: Supersonic Spike Diffuser (SSC-TOPS-10)</a></td>
+<td>Space Systems Command (SSC)</td>
+<td class="enriched-col collapsible">United States Space Force</td>
+<td class="enriched-col">RDT&E: $120M (FY2026 Total: $120M)</td>
+<td class="enriched-col collapsible">• SSC Enterprise Engineering & Integration (46) - $110.6M RDTE
+• Ship to Shore Connector (SSC) (167) - $9.0M RDTE</td>
+<td class="enriched-col collapsible">SSC is responsible for developing, acquiring, equipping, fielding, and sustaining lethal and resilient space capabilities.</td>
+<td class="enriched-col collapsible">GPS, Satellite communications, Launch services, Space domain awareness</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1631 - Space acquisition reform</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.ssc.spaceforce.mil</td>
+<td>Original Special Notice</td>
+<td>Aug 10, 2026</td>
+<td>August 10, 2027 at 01:00 PM MST</td>
+<td>NASA MARSHALL SPACE FLIGHT CENTER</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/ed995316973641aa8c1cc33be99ee056/view" target="_blank">Amendment 1: SSDP - Archive Servers</a></td>
+<td>FA2517  21 CONS BLDG 350</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Updated  Sources Sought</td>
+<td>Aug 10, 2026</td>
+<td>August 14, 2026 at 08:00 AM MST</td>
+<td>FA2517  21 CONS BLDG 350</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/7f42933f64084531877e3e79d3b9f4dd/view" target="_blank">ERIS Shopping Notice: Distributed Decentralized Control & Estimation</a></td>
+<td>DV</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td>Original Special Notice</td>
+<td>Aug 10, 2026</td>
+<td>July 31, 2027 at 04:59 PM MST</td>
+<td>DEF ADVANCED RESEARCH PROJECTS AGCY</td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/d5f4b9e8316c48c784a1d5c93a0d1988/view" target="_blank">Industry Day: A Government-Industry Exchange on Construction Contracting - An Invitation for Industry Partners to Collaborate with the United States Space Force Operational Contracting Enterprise</a></td>
+<td>United States Space Force (USSF)</td>
+<td class="enriched-col collapsible">Department of the Air Force</td>
+<td class="enriched-col">RDT&E: $29,034M, Procurement: $3,723M, O&M: $5,910M (FY2026 Total: $38,668M)</td>
+<td class="enriched-col collapsible">• Operation and Maintenance, Space Force (080) - $1,495.2M OM
+• Procurement, Space Force (22) - $1,473.0M PROCUREMENT
+• Operation and Maintenance, Space Force (030) - $983.8M OM</td>
+<td class="enriched-col collapsible">The United States Space Force is responsible for organizing, training, and equipping Guardians to conduct global space operations that enhance the way joint and coalition forces fight.</td>
+<td class="enriched-col collapsible">Space domain awareness, Satellite operations, Space control, Missile warning</td>
+<td class="enriched-col collapsible">FY2024 NDAA Title XVI - Space Force provisions</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.spaceforce.mil</td>
+<td>Original Special Notice</td>
+<td>Aug 10, 2026</td>
+<td>August 31, 2026 at 03:30 PM MST</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://sam.gov/workspace/contract/opp/bf52351d75c042ad9b08b433144e75a8/view" target="_blank">30 Day noise and vibration monitoring campaign at Stennis Space Center (SSC).</a></td>
+<td>Space Systems Command (SSC)</td>
+<td class="enriched-col collapsible">United States Space Force</td>
+<td class="enriched-col">RDT&E: $120M (FY2026 Total: $120M)</td>
+<td class="enriched-col collapsible">• SSC Enterprise Engineering & Integration (46) - $110.6M RDTE
+• Ship to Shore Connector (SSC) (167) - $9.0M RDTE</td>
+<td class="enriched-col collapsible">SSC is responsible for developing, acquiring, equipping, fielding, and sustaining lethal and resilient space capabilities.</td>
+<td class="enriched-col collapsible">GPS, Satellite communications, Launch services, Space domain awareness</td>
+<td class="enriched-col collapsible">FY2024 NDAA Sec. 1631 - Space acquisition reform</td>
+<td class="enriched-col collapsible">See solicitation</td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible"></td>
+<td class="enriched-col collapsible">https://www.ssc.spaceforce.mil</td>
+<td>Original Special Notice</td>
+<td>Aug 10, 2026</td>
+<td>August 12, 2026 at 10:00 AM MST</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<script>
+function toggleDetails() {
+  var table = document.getElementById("dataTable");
+  var btn = document.getElementById("toggleBtn");
+  if (table.classList.contains("expanded")) {
+    table.classList.remove("expanded");
+    btn.textContent = "Expand Details";
+  } else {
+    table.classList.add("expanded");
+    btn.textContent = "Collapse Details";
+  }
+}
+</script>
+</body>
+</html>
